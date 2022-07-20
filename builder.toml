@@ -1,4 +1,4 @@
-description = "Ubuntu jammy base image with buildpacks for Java, Go, and Procfile"
+description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, and Procfile"
 
 [[buildpacks]]
   uri = "docker://gcr.io/paketo-buildpacks/go:1.7.0"
