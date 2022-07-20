@@ -40,9 +40,13 @@ jobs:
         PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD: ${{ secrets.PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD }}
         DOCKERHUB_ORG: "paketobuildpacks"
       run: |
-        echo "${PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD}" | docker login --username "${PAKETO_BUILDPACKS_DOCKERHUB_USERNAME}" --password-stdin
-        docker tag builder "${DOCKERHUB_ORG}/builder-jammy-base:latest"
-        docker tag builder "${DOCKERHUB_ORG}/builder-jammy-base:${{ steps.event.outputs.tag }}"
+        # Strip off the Github org prefix from repo name
+        # paketo-buildpacks/builder-with-some-name --> builder-with-some-name
+        registry_repo=$(echo "${{ github.repository }}" | sed 's/^.*\///')
 
-        docker push "${DOCKERHUB_ORG}/builder-jammy-base:latest"
-        docker push "${DOCKERHUB_ORG}/builder-jammy-base:${{ steps.event.outputs.tag }}"
+        echo "${PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD}" | docker login --username "${PAKETO_BUILDPACKS_DOCKERHUB_USERNAME}" --password-stdin
+        docker tag builder "${DOCKERHUB_ORG}/${registry_repo}:latest"
+        docker tag builder "${DOCKERHUB_ORG}/${registry_repo}:${{ steps.event.outputs.tag }}"
+
+        docker push "${DOCKERHUB_ORG}/${registry_repo}:latest"
+        docker push "${DOCKERHUB_ORG}/${registry_repo}:${{ steps.event.outputs.tag }}"
