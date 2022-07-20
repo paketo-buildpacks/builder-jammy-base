@@ -1,0 +1,52 @@
+name: Push Builder Image
+
+on:
+  release:
+    types:
+    - published
+
+jobs:
+  push:
+    name: Push
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Parse Event
+      id: event
+      run: |
+        echo "::set-output name=tag::$(jq -r '.release.tag_name' "${GITHUB_EVENT_PATH}" | sed s/^v//)"
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Get pack version
+      id: pack-version
+      run: |
+        version=$(jq -r .pack "scripts/.util/tools.json")
+        echo "::set-output name=version::${version#v}"
+
+    - name: Install Global Pack
+      uses: buildpacks/github-actions/setup-pack@main
+      with:
+        pack-version: ${{ steps.pack-version.outputs.version }}
+
+    - name: Create Builder Image
+      run: |
+        pack builder create builder --config builder.toml
+
+    - name: Push To Dockerhub
+      env:
+        PAKETO_BUILDPACKS_DOCKERHUB_USERNAME: ${{ secrets.PAKETO_BUILDPACKS_DOCKERHUB_USERNAME }}
+        PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD: ${{ secrets.PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD }}
+        DOCKERHUB_ORG: "paketobuildpacks"
+      run: |
+        # Strip off the Github org prefix from repo name
+        # paketo-buildpacks/builder-with-some-name --> builder-with-some-name
+        registry_repo=$(echo "${{ github.repository }}" | sed 's/^.*\///')
+
+        echo "${PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD}" | docker login --username "${PAKETO_BUILDPACKS_DOCKERHUB_USERNAME}" --password-stdin
+        docker tag builder "${DOCKERHUB_ORG}/${registry_repo}:latest"
+        docker tag builder "${DOCKERHUB_ORG}/${registry_repo}:${{ steps.event.outputs.tag }}"
+
+        docker push "${DOCKERHUB_ORG}/${registry_repo}:latest"
+        docker push "${DOCKERHUB_ORG}/${registry_repo}:${{ steps.event.outputs.tag }}"
