@@ -1,6 +1,10 @@
 description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, and Procfile"
 
 [[buildpacks]]
+  uri = "docker://gcr.io/paketo-buildpacks/dotnet-core:0.20.0"
+  version = "0.20.0"
+
+[[buildpacks]]
   uri = "docker://gcr.io/paketo-buildpacks/go:1.7.0"
   version = "1.7.0"
 
@@ -18,6 +22,12 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
 [lifecycle]
   version = "0.14.1"
+
+[[order]]
+
+  [[order.group]]
+    id = "paketo-buildpacks/dotnet-core"
+    version = "0.20.0"
 
 [[order]]
 
