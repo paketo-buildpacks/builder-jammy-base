@@ -9,12 +9,12 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "2.0.0"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/java-native-image:7.24.0"
-  version = "7.24.0"
+  uri = "docker://gcr.io/paketo-buildpacks/java-native-image:7.25.0"
+  version = "7.25.0"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/java:6.32.0"
-  version = "6.32.0"
+  uri = "docker://gcr.io/paketo-buildpacks/java:6.33.0"
+  version = "6.33.0"
 
 [[buildpacks]]
   uri = "docker://gcr.io/paketo-buildpacks/procfile:5.2.1"
@@ -39,13 +39,13 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/java-native-image"
-    version = "7.24.0"
+    version = "7.25.0"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/java"
-    version = "6.32.0"
+    version = "6.33.0"
 
 [[order]]
 
