@@ -31,6 +31,7 @@ func TestSmoke(t *testing.T) {
 	suite("Go", testGo)
 	suite("Java Native Image", testJavaNativeImage)
 	suite("Java", testJava)
+	suite("Node.js", testNodejs)
 	suite("Procfile", testProcfile)
 	suite.Run(t)
 }
