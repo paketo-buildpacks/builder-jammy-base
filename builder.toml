@@ -1,20 +1,20 @@
 description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, .NET Core, Node.js, Python, and Procfile"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/dotnet-core:0.23.0"
-  version = "0.23.0"
+  uri = "docker://gcr.io/paketo-buildpacks/dotnet-core:0.23.2"
+  version = "0.23.2"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/go:3.0.0"
-  version = "3.0.0"
+  uri = "docker://gcr.io/paketo-buildpacks/go:3.0.1"
+  version = "3.0.1"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/java-native-image:7.29.0"
-  version = "7.29.0"
+  uri = "docker://gcr.io/paketo-buildpacks/java-native-image:7.32.1"
+  version = "7.32.1"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/java:7.1.0"
-  version = "7.1.0"
+  uri = "docker://gcr.io/paketo-buildpacks/java:7.4.1"
+  version = "7.4.1"
 
 [[buildpacks]]
   uri = "docker://gcr.io/paketo-buildpacks/nodejs:0.24.0"
@@ -25,35 +25,35 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "5.4.0"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/python:2.1.0"
-  version = "2.1.0"
+  uri = "docker://gcr.io/paketo-buildpacks/python:2.2.0"
+  version = "2.2.0"
 
 [lifecycle]
-  version = "0.14.1"
+  version = "0.14.2"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/dotnet-core"
-    version = "0.23.0"
+    version = "0.23.2"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/go"
-    version = "3.0.0"
+    version = "3.0.1"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/java-native-image"
-    version = "7.29.0"
+    version = "7.32.1"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/java"
-    version = "7.1.0"
+    version = "7.4.1"
 
 [[order]]
 
@@ -65,7 +65,7 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/python"
-    version = "2.1.0"
+    version = "2.2.0"
 
 [[order]]
 
@@ -74,7 +74,7 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
     version = "5.4.0"
 
 [stack]
-  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.10"
+  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.14"
   id = "io.buildpacks.stacks.jammy"
   run-image = "index.docker.io/paketobuildpacks/run-jammy-base:latest"
   run-image-mirrors = []
