@@ -1,4 +1,4 @@
-description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, .NET Core, Node.js, Python, and Procfile"
+description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, .NET Core, Node.js, Python, Apache HTTPD, NGINX and Procfile"
 
 [[buildpacks]]
   uri = "docker://gcr.io/paketo-buildpacks/dotnet-core:0.23.6"
@@ -28,6 +28,10 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   uri = "docker://gcr.io/paketo-buildpacks/python:2.3.0"
   version = "2.3.0"
 
+[[buildpacks]]
+  uri = "docker://gcr.io/paketo-buildpacks/web-servers:0.4.0"
+  version = "0.4.0"
+
 [lifecycle]
   version = "0.14.3"
 
@@ -54,6 +58,12 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   [[order.group]]
     id = "paketo-buildpacks/java"
     version = "7.8.0"
+
+[[order]]
+
+  [[order.group]]
+    id = "paketo-buildpacks/web-servers"
+    version = "0.4.0"
 
 [[order]]
 
