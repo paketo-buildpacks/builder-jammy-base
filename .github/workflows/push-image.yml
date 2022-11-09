@@ -14,7 +14,7 @@ jobs:
     - name: Parse Event
       id: event
       run: |
-        echo "::set-output name=tag::$(jq -r '.release.tag_name' "${GITHUB_EVENT_PATH}" | sed s/^v//)"
+        echo "tag=$(jq -r '.release.tag_name' "${GITHUB_EVENT_PATH}" | sed s/^v//)" >> "$GITHUB_OUTPUT"
 
     - name: Checkout
       uses: actions/checkout@v2
@@ -23,7 +23,7 @@ jobs:
       id: pack-version
       run: |
         version=$(jq -r .pack "scripts/.util/tools.json")
-        echo "::set-output name=version::${version#v}"
+        echo "version=${version#v}" >> "$GITHUB_OUTPUT"
 
     - name: Install Global Pack
       uses: buildpacks/github-actions/setup-pack@main
