@@ -25,8 +25,8 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "5.4.0"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/python:2.5.0"
-  version = "2.5.0"
+  uri = "docker://gcr.io/paketo-buildpacks/python:2.6.0"
+  version = "2.6.0"
 
 [[buildpacks]]
   uri = "docker://gcr.io/paketo-buildpacks/ruby:0.20.0"
@@ -37,7 +37,7 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "0.4.0"
 
 [lifecycle]
-  version = "0.15.1"
+  version = "0.15.2"
 
 [[order]]
 
@@ -85,7 +85,7 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/python"
-    version = "2.5.0"
+    version = "2.6.0"
 
 [[order]]
 
@@ -94,7 +94,7 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
     version = "5.4.0"
 
 [stack]
-  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.26"
+  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.27"
   id = "io.buildpacks.stacks.jammy"
   run-image = "index.docker.io/paketobuildpacks/run-jammy-base:latest"
   run-image-mirrors = []
