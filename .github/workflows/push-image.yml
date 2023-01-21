@@ -50,3 +50,22 @@ jobs:
 
         docker push "${DOCKERHUB_ORG}/${registry_repo}:latest"
         docker push "${DOCKERHUB_ORG}/${registry_repo}:${{ steps.event.outputs.tag }}"
+
+  failure:
+    name: Alert on Failure
+    runs-on: ubuntu-22.04
+    needs: [push]
+    if: ${{ always() && needs.push.result == 'failure' }}
+    steps:
+    - name: File Failure Alert Issue
+      uses: paketo-buildpacks/github-config/actions/issue/file@main
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        repo: ${{ github.repository }}
+        label: "failure:push"
+        comment_if_exists: true
+        issue_title: "Failure: Push Image workflow"
+        issue_body: |
+          Push Image workflow [failed](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}).
+        comment_body: |
+           Another failure occurred: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
