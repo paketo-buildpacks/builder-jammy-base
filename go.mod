@@ -3,7 +3,7 @@ module github.com/paketo-buildpacks/builder-jammy-base
 go 1.18
 
 require (
-	github.com/onsi/gomega v1.28.0
+	github.com/onsi/gomega v1.28.1
 	github.com/paketo-buildpacks/occam v0.17.0
 	github.com/sclevine/spec v1.4.0
 )
@@ -22,7 +22,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/imdario/mergo v0.3.15 // indirect
 	github.com/klauspost/compress v1.16.4 // indirect
@@ -42,9 +42,9 @@ require (
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea // indirect
 	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.14.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/tools v0.12.0 // indirect
 	google.golang.org/genproto v0.0.0-20230403163135-c38d8f061ccd // indirect
 	google.golang.org/grpc v1.54.0 // indirect
