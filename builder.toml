@@ -94,7 +94,7 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
     version = "5.6.8"
 
 [stack]
-  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.102"
+  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.103"
   id = "io.buildpacks.stacks.jammy"
   run-image = "index.docker.io/paketobuildpacks/run-jammy-base:latest"
   run-image-mirrors = []
