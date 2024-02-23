@@ -38,8 +38,9 @@ jobs:
       env:
         PAKETO_BUILDPACKS_DOCKERHUB_USERNAME: ${{ secrets.PAKETO_BUILDPACKS_DOCKERHUB_USERNAME }}
         PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD: ${{ secrets.PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD }}
-        DOCKERHUB_ORG: "paketobuildpacks"
+        GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
       run: |
+        DOCKERHUB_ORG="${GITHUB_REPOSITORY_OWNER/-/}" # translates 'paketo-buildpacks' to 'paketobuildpacks'
         # Strip off the Github org prefix from repo name
         # paketo-buildpacks/builder-with-some-name --> builder-with-some-name
         registry_repo=$(echo "${{ github.repository }}" | sed 's/^.*\///')
