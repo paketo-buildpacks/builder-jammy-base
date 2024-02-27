@@ -135,6 +135,13 @@ function util::tools::pack::install() {
 
     version="$(jq -r .pack "$(dirname "${BASH_SOURCE[0]}")/tools.json")"
 
+    local pack_config_enable_experimental
+    if [ -f "$(dirname "${BASH_SOURCE[0]}")/../options.json" ]; then
+      pack_config_enable_experimental="$(jq -r .pack_config_enable_experimental "$(dirname "${BASH_SOURCE[0]}")/../options.json")"
+    else
+      pack_config_enable_experimental="false"
+    fi
+
     tmp_location="/tmp/pack.tgz"
     curl_args=(
       "--fail"
@@ -157,6 +164,10 @@ function util::tools::pack::install() {
 
     tar xzf "${tmp_location}" -C "${dir}"
     chmod +x "${dir}/pack"
+
+    if [[ "${pack_config_enable_experimental}" == "true" ]]; then
+      "${dir}"/pack config experimental true
+    fi
 
     rm "${tmp_location}"
   else
