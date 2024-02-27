@@ -30,6 +30,12 @@ jobs:
       with:
         pack-version: ${{ steps.pack-version.outputs.version }}
 
+    - name: Enable Experimental Pack Features
+      run: |
+        if [ -f "scripts/options.json" ] && jq -e -r .pack_config_enable_experimental "scripts/options.json" > /dev/null; then
+          pack config experimental true
+        fi
+
     - name: Create Builder Image
       run: |
         pack builder create builder --config builder.toml
