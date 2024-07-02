@@ -31,6 +31,8 @@ function util::tools::arch() {
     amd64|x86_64)
       if [[ "${1:-}" == "--blank-amd64" ]]; then
         echo ""
+      elif [[ "${1:-}" == "--uname-format-amd64" ]]; then
+        echo "x86_64"
       else
         echo "amd64"
       fi
@@ -102,7 +104,7 @@ function util::tools::jam::install() {
 
     chmod +x "${dir}/jam"
   else
-    util::print::title "Using $("${dir}"/jam version)"
+    util::print::info "Using $("${dir}"/jam version)"
   fi
 }
 
@@ -183,4 +185,90 @@ function util::tools::tests::checkfocus() {
     util::print::success "** GO Test Succeeded **" 197
   fi
   rm "${testout}"
+}
+
+function util::tools::crane::install() {
+  local dir token
+  token=""
+
+  while [[ "${#}" != 0 ]]; do
+    case "${1}" in
+      --directory)
+        dir="${2}"
+        shift 2
+        ;;
+
+      --token)
+        token="${2}"
+        shift 2
+        ;;
+
+      *)
+        util::print::error "unknown argument \"${1}\""
+    esac
+  done
+
+  mkdir -p "${dir}"
+  util::tools::path::export "${dir}"
+
+  if [[ ! -f "${dir}/crane" ]]; then
+    local version curl_args os arch
+
+    version="$(jq -r .crane "$(dirname "${BASH_SOURCE[0]}")/tools.json")"
+
+    curl_args=(
+      "--fail"
+      "--silent"
+      "--location"
+    )
+
+    if [[ "${token}" != "" ]]; then
+      curl_args+=("--header" "Authorization: Token ${token}")
+    fi
+
+    util::print::title "Installing crane ${version}"
+
+    os=$(util::tools::os)
+    arch=$(util::tools::arch --uname-format-amd64)
+
+
+    curl "https://github.com/google/go-containerregistry/releases/download/${version}/go-containerregistry_Linux_${arch}.tar.gz" \
+      "${curl_args[@]}" | tar -C "${dir}" -xz crane
+
+    chmod +x "${dir}/crane"
+  fi
+}
+
+
+# Returns a random unused port
+function get::random::port() {
+  local port=$(shuf -i 50000-65000 -n 1)
+  netstat -lat | grep $port > /dev/null
+  if [[ $? == 1 ]] ; then
+    echo $port
+  else
+    echo get::random::port
+  fi
+}
+
+# Starts a local registry on the given port and returns the pid
+function local::registry::start() {
+  local registryPort registryPid localRegistry
+
+  registryPort="$1"
+  localRegistry="127.0.0.1:$registryPort"
+
+  # Start a local in-memory registry so we can work with oci archives
+  PORT=$registryPort crane registry serve --insecure > /dev/null 2>&1 &
+  registryPid=$!
+
+  # Stop the registry if execution is interrupted
+  trap "kill $registryPid" 1 2 3 6
+
+  # Wait for the registry to be available
+  until crane catalog $localRegistry > /dev/null 2>&1; do
+    sleep 1
+  done
+
+  echo $registryPid
 }
