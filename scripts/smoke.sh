@@ -5,6 +5,7 @@ set -o pipefail
 
 readonly PROGDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly BUILDERDIR="$(cd "${PROGDIR}/.." && pwd)"
+readonly OPTIONS_JSON="${BUILDERDIR}/scripts/options.json"
 
 # shellcheck source=SCRIPTDIR/.util/tools.sh
 source "${PROGDIR}/.util/tools.sh"
@@ -14,7 +15,10 @@ source "${PROGDIR}/.util/print.sh"
 
 function main() {
   local name token
+  local registryPort registryPid localRegistry setupLocalRegistry pushBuilderToLocalRegistry
   token=""
+  registryPid=""
+  setupLocalRegistry=""
 
   while [[ "${#}" != 0 ]]; do
     case "${1}" in
@@ -54,9 +58,39 @@ function main() {
 
   tools::install "${token}"
 
+  if [[ -f $OPTIONS_JSON ]]; then
+    setupLocalRegistry="$(jq -r '.setup_local_registry //false' $OPTIONS_JSON)"
+  fi
+
+  if [[ "${setupLocalRegistry}" == "true" ]]; then
+    registryPort=$(get::random::port)
+    registryPid=$(local::registry::start $registryPort)
+    localRegistry="127.0.0.1:$registryPort"
+    export REGISTRY_URL="${localRegistry}"
+  fi
+
+  if [ -f $OPTIONS_JSON ]; then
+    pushBuilderToLocalRegistry="$(jq -r '.push_builder_to_local_registry //false' $OPTIONS_JSON)"
+  else
+    pushBuilderToLocalRegistry="false"
+  fi
+
   builder::create "${name}"
   image::pull::lifecycle "${name}"
-  tests::run "${name}"
+
+  if [ "${pushBuilderToLocalRegistry}" == "true" ]; then
+    docker tag "$name" "$REGISTRY_URL/$name"
+    docker push "$REGISTRY_URL/$name"
+    imageName="$REGISTRY_URL/$name"
+  else
+    imageName="$name"
+  fi
+
+  tests::run $imageName
+
+  if [[ "${setupLocalRegistry}" == "true" ]]; then
+    kill $registryPid
+  fi
 }
 
 function usage() {
@@ -75,6 +109,10 @@ USAGE
 function tools::install() {
   local token
   token="${1}"
+
+  util::tools::crane::install \
+    --directory "${BUILDERDIR}/.bin" \
+    --token "${token}"
 
   util::tools::pack::install \
     --directory "${BUILDERDIR}/.bin" \
