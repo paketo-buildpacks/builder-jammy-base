@@ -1,6 +1,6 @@
 module github.com/paketo-buildpacks/builder-jammy-base
 
-go 1.23.2
+go 1.23.3
 
 require (
 	github.com/onsi/gomega v1.35.1
