@@ -4,7 +4,7 @@ go 1.23.3
 
 require (
 	github.com/onsi/gomega v1.35.1
-	github.com/paketo-buildpacks/occam v0.18.8
+	github.com/paketo-buildpacks/occam v0.19.0
 	github.com/sclevine/spec v1.4.0
 )
 
@@ -24,7 +24,7 @@ require (
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.5 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.6 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -45,7 +45,7 @@ require (
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
-	github.com/paketo-buildpacks/packit/v2 v2.14.2 // indirect
+	github.com/paketo-buildpacks/packit/v2 v2.16.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/shirou/gopsutil/v3 v3.23.12 // indirect
