@@ -1,12 +1,12 @@
 description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, .NET Core, Node.js, Python, Apache HTTPD, NGINX and Procfile"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/dotnet-core:0.50.1"
-  version = "0.50.1"
+  uri = "docker://gcr.io/paketo-buildpacks/dotnet-core:0.50.2"
+  version = "0.50.2"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/go:4.12.4"
-  version = "4.12.4"
+  uri = "docker://gcr.io/paketo-buildpacks/go:4.12.5"
+  version = "4.12.5"
 
 [[buildpacks]]
   uri = "docker://gcr.io/paketo-buildpacks/java-native-image:11.2.0"
@@ -17,24 +17,24 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "17.3.0"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/nodejs:6.1.0"
-  version = "6.1.0"
+  uri = "docker://gcr.io/paketo-buildpacks/nodejs:6.1.1"
+  version = "6.1.1"
 
 [[buildpacks]]
   uri = "docker://gcr.io/paketo-buildpacks/procfile:5.10.1"
   version = "5.10.1"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/python:2.22.2"
-  version = "2.22.2"
+  uri = "docker://gcr.io/paketo-buildpacks/python:2.22.3"
+  version = "2.22.3"
 
 [[buildpacks]]
   uri = "docker://gcr.io/paketo-buildpacks/ruby:0.47.6"
   version = "0.47.6"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/web-servers:0.27.2"
-  version = "0.27.2"
+  uri = "docker://gcr.io/paketo-buildpacks/web-servers:0.27.3"
+  version = "0.27.3"
 
 [lifecycle]
   version = "0.20.4"
@@ -49,13 +49,13 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/dotnet-core"
-    version = "0.50.1"
+    version = "0.50.2"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/go"
-    version = "4.12.4"
+    version = "4.12.5"
 
 [[order]]
 
@@ -73,19 +73,19 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/web-servers"
-    version = "0.27.2"
+    version = "0.27.3"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/nodejs"
-    version = "6.1.0"
+    version = "6.1.1"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/python"
-    version = "2.22.2"
+    version = "2.22.3"
 
 [[order]]
 
