@@ -13,8 +13,8 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "11.5.1"
 
 [[buildpacks]]
-  uri = "docker://gcr.io/paketo-buildpacks/java:18.0.0"
-  version = "18.0.0"
+  uri = "docker://gcr.io/paketo-buildpacks/java:18.1.0"
+  version = "18.1.0"
 
 [[buildpacks]]
   uri = "docker://gcr.io/paketo-buildpacks/nodejs:7.3.1"
@@ -67,7 +67,7 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/java"
-    version = "18.0.0"
+    version = "18.1.0"
 
 [[order]]
 
