@@ -2,7 +2,7 @@
 
 ## Building
 
-`pack build mod-sample --buildpack gcr.io/paketo-buildpacks/go`
+`pack build mod-sample --buildpack docker.io/paketobuildpacks/go`
 
 ## Running
 

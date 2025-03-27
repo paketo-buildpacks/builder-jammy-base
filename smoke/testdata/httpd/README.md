@@ -3,7 +3,7 @@
 ## Building
 
 ```bash
-pack build my-httpd-app --buildpack gcr.io/paketo-buildpacks/httpd --builder paketobuildpacks/builder:full
+pack build my-httpd-app --buildpack docker.io/paketobuildpacks/httpd --builder paketobuildpacks/builder:full
 ```
 
 ## Running
