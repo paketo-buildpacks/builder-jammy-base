@@ -2,7 +2,7 @@
 
 ## Building
 
-`pack build dotnet-runtime-sample --buildpack gcr.io/paketo-buildpacks/dotnet-core`
+`pack build dotnet-runtime-sample --buildpack docker.io/paketobuildpacks/dotnet-core`
 
 ## Running
 

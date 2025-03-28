@@ -2,7 +2,7 @@
 
 ## Building
 
-`pack build pipenv-sample --buildpack gcr.io/paketo-buildpacks/python`
+`pack build pipenv-sample --buildpack docker.io/paketobuildpacks/python`
 
 ## Running
 
