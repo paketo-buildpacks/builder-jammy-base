@@ -9,8 +9,8 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "4.15.6"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/java-native-image:11.12.0"
-  version = "11.12.0"
+  uri = "docker://docker.io/paketobuildpacks/java-native-image:11.13.0"
+  version = "11.13.0"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/java:18.9.0"
@@ -33,11 +33,11 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "0.47.6"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/web-servers:1.4.7"
-  version = "1.4.7"
+  uri = "docker://docker.io/paketobuildpacks/web-servers:1.4.8"
+  version = "1.4.8"
 
 [lifecycle]
-  version = "0.20.10"
+  version = "0.20.11"
 
 [[order]]
 
@@ -61,7 +61,7 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/java-native-image"
-    version = "11.12.0"
+    version = "11.13.0"
 
 [[order]]
 
@@ -73,7 +73,7 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/web-servers"
-    version = "1.4.7"
+    version = "1.4.8"
 
 [[order]]
 
