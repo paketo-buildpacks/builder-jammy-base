@@ -20,7 +20,7 @@ jobs:
         go-version: 'stable'
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Get pack version
       id: pack-version
@@ -54,7 +54,7 @@ jobs:
     needs: smoke
     steps:
     - name: Checkout With History
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0  # gets full history
 
