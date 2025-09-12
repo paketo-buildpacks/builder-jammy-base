@@ -1,12 +1,12 @@
 description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, .NET Core, Node.js, Python, Apache HTTPD, NGINX and Procfile"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/dotnet-core:3.1.6"
-  version = "3.1.6"
+  uri = "docker://docker.io/paketobuildpacks/dotnet-core:3.1.7"
+  version = "3.1.7"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/go:4.16.12"
-  version = "4.16.12"
+  uri = "docker://docker.io/paketobuildpacks/go:4.16.13"
+  version = "4.16.13"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/java-native-image:11.16.0"
@@ -17,24 +17,24 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "18.13.0"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/nodejs:9.5.0"
-  version = "9.5.0"
+  uri = "docker://docker.io/paketobuildpacks/nodejs:9.6.0"
+  version = "9.6.0"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/procfile:5.11.3"
   version = "5.11.3"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/python:2.33.0"
-  version = "2.33.0"
+  uri = "docker://docker.io/paketobuildpacks/python:2.34.0"
+  version = "2.34.0"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/ruby:0.47.6"
   version = "0.47.6"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/web-servers:2.7.0"
-  version = "2.7.0"
+  uri = "docker://docker.io/paketobuildpacks/web-servers:2.8.0"
+  version = "2.8.0"
 
 [lifecycle]
   version = "0.20.14"
@@ -49,13 +49,13 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/dotnet-core"
-    version = "3.1.6"
+    version = "3.1.7"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/go"
-    version = "4.16.12"
+    version = "4.16.13"
 
 [[order]]
 
@@ -73,19 +73,19 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/web-servers"
-    version = "2.7.0"
+    version = "2.8.0"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/nodejs"
-    version = "9.5.0"
+    version = "9.6.0"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/python"
-    version = "2.33.0"
+    version = "2.34.0"
 
 [[order]]
 
@@ -94,6 +94,6 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
     version = "5.11.3"
 
 [stack]
-  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.169"
+  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.170"
   id = "io.buildpacks.stacks.jammy"
   run-image = "index.docker.io/paketobuildpacks/run-jammy-base:latest"
