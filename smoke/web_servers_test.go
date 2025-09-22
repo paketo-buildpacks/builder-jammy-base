@@ -56,7 +56,7 @@ func testWebServers(t *testing.T, context spec.G, it spec.S) {
 
 			var logs fmt.Stringer
 			image, logs, err = pack.Build.
-				WithPullPolicy("never").
+				WithPullPolicy("always").
 				WithBuilder(Builder).
 				Execute(name, source)
 			Expect(err).ToNot(HaveOccurred(), logs.String)
@@ -102,7 +102,7 @@ func testWebServers(t *testing.T, context spec.G, it spec.S) {
 
 			var logs fmt.Stringer
 			image, logs, err = pack.Build.
-				WithPullPolicy("never").
+				WithPullPolicy("always").
 				WithBuilder(Builder).
 				Execute(name, source)
 			Expect(err).ToNot(HaveOccurred(), logs.String)
@@ -149,7 +149,7 @@ func testWebServers(t *testing.T, context spec.G, it spec.S) {
 
 				var logs fmt.Stringer
 				image, logs, err = pack.Build.
-					WithPullPolicy("never").
+					WithPullPolicy("always").
 					WithBuilder(Builder).
 					WithEnv(map[string]string{
 						"BP_NODE_RUN_SCRIPTS":             "build",
@@ -183,7 +183,7 @@ func testWebServers(t *testing.T, context spec.G, it spec.S) {
 
 				var logs fmt.Stringer
 				image, logs, err = pack.Build.
-					WithPullPolicy("never").
+					WithPullPolicy("always").
 					WithBuilder(Builder).
 					WithEnv(map[string]string{
 						"BP_NODE_RUN_SCRIPTS":             "build",

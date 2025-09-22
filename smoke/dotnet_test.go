@@ -56,7 +56,7 @@ func testDotnet(t *testing.T, context spec.G, it spec.S) {
 
 			var logs fmt.Stringer
 			image, logs, err = pack.Build.
-				WithPullPolicy("never").
+				WithPullPolicy("always").
 				WithBuilder(Builder).
 				Execute(name, source)
 			Expect(err).ToNot(HaveOccurred(), logs.String)
