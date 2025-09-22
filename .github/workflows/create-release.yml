@@ -7,10 +7,94 @@ on:
 
 concurrency: release
 
+env:
+  BUILDERS_FILEPATH: "builders.json"
+
 jobs:
+  preparation:
+    name: Preparation
+    runs-on: ubuntu-24.04
+    outputs:
+      builders: ${{ steps.get-builders.outputs.builders }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Get Builders
+      id: get-builders
+      run: |
+        builders=$(jq -n -c '[]')
+
+        if [ -f ${{ env.BUILDERS_FILEPATH }} ]; then
+          builders=$(jq -c '.builders' ${{ env.BUILDERS_FILEPATH }})
+        else
+          # Strip off the Github org prefix from repo name
+          # paketo-buildpacks/builder-with-some-name --> builder-with-some-name
+          registry_repo=$(echo "${{ github.repository }}" | sed 's/^.*\///')
+          builders=$(jq -n -c '[
+              {
+                "name": "'"${registry_repo}"'",
+                "path": ".",
+                "container_repository": "'"${registry_repo}"'"
+              }
+            ]')
+        fi
+
+        # Filter only the necessary fields
+        builders=$(echo "$builders" | jq 'map({
+          name,
+          path,
+          container_repository
+        })')
+
+        builders=$(jq -c <<< "$builders")
+        echo "builders=$builders"
+        echo "builders=$builders" >> "$GITHUB_OUTPUT"
+
+  builder_files_changed:
+    name: Builder Files Changed
+    runs-on: ubuntu-24.04
+    needs: preparation
+    outputs:
+      builders_changed: ${{ steps.compare_previous_release.outputs.builders_changed }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # gets full history
+
+    - name: Compare previous releases
+      id: compare_previous_release
+      run: |
+        builders=$(echo '${{ needs.preparation.outputs.builders }}' | jq -c '.[]')
+        for builder in $builders; do
+          builder_path=$(echo "$builder" | jq -r '.path')
+
+          changed=$(git diff --name-only $(git describe --tags --abbrev=0) -- $builder_path/builder.toml)
+          if [ -z "${changed}" ]
+          then
+            # We do not write on the github output because this step runs multiple times
+            # and it might overwrite any true value written by the else statement.
+            echo "No changes for $builder_path/builder.toml"
+          else
+            echo "Changes detected for $builder_path/builder.toml"
+            echo "builders_changed=true" >> $GITHUB_OUTPUT
+          fi
+        done
+
   smoke:
     name: Smoke Test
     runs-on: ubuntu-24.04
+    needs: [preparation, builder_files_changed]
+    if: ${{ needs.builder_files_changed.outputs.builders_changed == 'true' }}
+    strategy:
+      matrix:
+        builders: ${{ fromJSON(needs.preparation.outputs.builders) }}
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     outputs:
       release_notes: ${{ steps.notes.outputs.body }}
     steps:
@@ -34,43 +118,102 @@ jobs:
         pack-version: ${{ steps.pack-version.outputs.version }}
 
     - name: Run Smoke Tests
-      run: ./scripts/smoke.sh --name builder
+      run: |
+        ./scripts/smoke.sh --builder-dir "${{ matrix.builders.path }}"
 
-    - name: Generate Release Notes
+    - name: Generate builder info
       id: notes
       run: |
-        notes="$(pack inspect-builder builder | grep -v 'Inspecting builder' \
+        registry_builder_name=localhost:5000/${{ matrix.builders.name }}
+
+        ./scripts/publish.sh --builder-toml-path "${{ matrix.builders.path }}/builder.toml" \
+          --builder-image-ref "${registry_builder_name}"
+
+        pack inspect-builder $registry_builder_name | grep -v 'Inspecting builder' \
           | grep -v 'REMOTE:' \
           | grep -v 'LOCAL:' \
           | grep -v '\(not present\)' \
-          | grep -v 'Warning' \
-          | sed -e '/./,$!d' \
-          | awk -F, '{printf "%s\\n", $0}')"
-        echo "body=${notes}" >> "$GITHUB_OUTPUT"
+          | grep -v 'Warning' > "${{ matrix.builders.name }}-info.md"
+
+    - name: Upload info for ${{ matrix.builders.name }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: "${{ matrix.builders.name }}-info.md"
+        path: "${{ matrix.builders.name }}-info.md"
 
   release:
     name: Release
     runs-on: ubuntu-24.04
-    needs: smoke
+    needs: [smoke, preparation]
     steps:
     - name: Checkout With History
       uses: actions/checkout@v5
       with:
         fetch-depth: 0  # gets full history
 
-    - name: Compare With Previous Release
-      id: compare_previous_release
+    - name: Download Release Note File(s)
+      uses: actions/download-artifact@v4
+      with:
+        path: info
+        pattern: "*info.md"
+        merge-multiple: true
+
+    - name: Generate Release Notes and Assets
+      id: generate_release_notes_and_assets
       run: |
-        if [ -z "$(git diff $(git describe --tags --abbrev=0) -- builder.toml)" ]
-        then
-          echo "builder_changes=false" >> "$GITHUB_OUTPUT"
-        else
-          echo "builder_changes=true" >> "$GITHUB_OUTPUT"
+        set -euo pipefail
+        shopt -s inherit_errexit
+
+        builders=$(echo '${{ needs.preparation.outputs.builders }}' | jq -c '.[]')
+        builders_length=$(echo '${{ needs.preparation.outputs.builders }}' | jq 'length')
+
+        release_notes_dir="info"
+
+        # Start with an empty array
+        assets=$(jq -n -c '[]')
+
+        # Generate release assets only if we have more than one builder
+        if [ "$builders_length" -gt 1 ]; then
+          for builder in $builders; do
+            builder_name=$(echo "$builder" | jq -r '.name')
+
+            assets="$(jq -c \
+              --arg release_notes_dir "${release_notes_dir}" \
+              --arg builder_name "${builder_name}" \
+              '. += [
+                {
+                  "path": ($release_notes_dir + "/" + $builder_name + "-" + "info.md"),
+                  "name": ($builder_name + "-" + "info.md"),
+                  "content_type": "text/markdown"
+                }
+              ]' <<<"${assets}")"
+          done
         fi
+
+        echo "assets=${assets}" >> "$GITHUB_OUTPUT"
+
+        # translates 'paketo-buildpacks' to 'paketobuildpacks'
+        DOCKERHUB_ORG="${GITHUB_REPOSITORY_OWNER/-/}"
+
+        release_body=""
+        if [ "$builders_length" -gt 1 ]; then
+          for builder in $builders; do
+            container_repository=$(echo "$builder" | jq -r '.container_repository')
+            release_body+="Builder: \`${DOCKERHUB_ORG}/${container_repository}\`\n"
+          done
+          payload="{\"body\" : \"\n${release_body}\"}"
+        else
+          builder=$(echo "$builders" | head -n 1)
+          release_body="$(cat $release_notes_dir/$(echo "$builder" | jq -r '.name')-info.md \
+          | sed -e '/./,$!d' \
+          | awk -F, '{printf "%s\\n", $0}')"
+          payload="{\"body\" : \"\`\`\`\n${release_body}\n\`\`\`\"}"
+        fi
+
+        echo "release_body=${payload}" >> "$GITHUB_OUTPUT"
 
     - name: Publish Release
       id: publish
-      if: ${{ steps.compare_previous_release.outputs.builder_changes == 'true' }}
       uses: release-drafter/release-drafter@v6
       with:
         config-name: release-drafter-config.yml
@@ -79,22 +222,38 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
 
     - name: Update Release Notes
-      if: ${{ steps.compare_previous_release.outputs.builder_changes == 'true' }}
       run: |
         set -euo pipefail
         shopt -s inherit_errexit
 
-        payload="{\"body\" : \"\`\`\`\n${RELEASE_BODY}\n\`\`\`\"}"
-
+        payload='${{ steps.generate_release_notes_and_assets.outputs.release_body }}'
         curl --fail \
           -X PATCH \
           -H "Accept: application/vnd.github.v3+json" \
           -H "Authorization: token ${GITHUB_TOKEN}" \
           "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" \
           -d "${payload}"
+
+        assets='${{ steps.generate_release_notes_and_assets.outputs.assets }}'
+
+        # Update release assets
+        for row in $(echo "${assets}" | jq -c '.[]'); do
+          path=$(echo "$row" | jq -r '.path')
+          name=$(echo "$row" | jq -r '.name')
+          content_type=$(echo "$row" | jq -r '.content_type')
+
+          echo "Uploading asset: ${name} from path: ${path}"
+
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Content-Type: ${content_type}" \
+            "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=${name}" \
+            --data-binary "@${path}"
+        done
       env:
         RELEASE_ID: ${{ steps.publish.outputs.id }}
-        RELEASE_BODY: ${{ needs.smoke.outputs.release_notes }}
         GITHUB_TOKEN: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
 
   failure:
