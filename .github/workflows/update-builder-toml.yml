@@ -7,10 +7,58 @@ on:
 
 concurrency: builder_update
 
+env:
+  BUILDERS_FILEPATH: "builders.json"
+
 jobs:
+  preparation:
+    name: Preparation
+    runs-on: ubuntu-24.04
+    outputs:
+      builders: ${{ steps.get-builders.outputs.builders }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Get Builders
+      id: get-builders
+      run: |
+        builders=$(jq -n -c '[]')
+
+        if [ -f ${{ env.BUILDERS_FILEPATH }} ]; then
+          builders=$(jq -c '.builders' ${{ env.BUILDERS_FILEPATH }})
+        else
+          # Strip off the Github org prefix from repo name
+          # paketo-buildpacks/builder-with-some-name --> builder-with-some-name
+          registry_repo=$(echo "${{ github.repository }}" | sed 's/^.*\///')
+          builders=$(jq -n -c '[
+              {
+                "name": "'"${registry_repo}"'",
+                "path": ".",
+                "container_repository": "'"${registry_repo}"'"
+              }
+            ]')
+        fi
+
+        # Filter only the necessary fields
+        builders=$(echo "$builders" | jq 'map({
+          name,
+          path,
+          container_repository
+        })')
+
+        builders=$(jq -c <<< "$builders")
+        echo "builders=$builders"
+        echo "builders=$builders" >> "$GITHUB_OUTPUT"
+
   update:
     name: Update builder.toml
     runs-on: ubuntu-24.04
+    needs: preparation
+    strategy:
+      matrix:
+        builders: ${{ fromJSON(needs.preparation.outputs.builders) }}
+
     steps:
     - name: Check out
       uses: actions/checkout@v5
@@ -18,19 +66,20 @@ jobs:
     - name: Checkout branch
       uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
       with:
-        branch: "automation/builder-toml"
+        branch: "automation/${{ matrix.builders.name }}-builder-toml"
 
     - name: Update builder.toml
       uses: paketo-buildpacks/github-config/actions/builder/update@main
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        filename: "${{ matrix.builders.path }}/builder.toml"
 
     - name: Git commit
       id: commit
       uses: paketo-buildpacks/github-config/actions/pull-request/create-commit@main
       with:
-        message: "Update builder.toml"
-        pathspec: "builder.toml"
+        message: "Update ${{ matrix.builders.name }} builder.toml"
+        pathspec: "${{ matrix.builders.path }}/builder.toml"
         keyid: ${{ secrets.PAKETO_BOT_GPG_SIGNING_KEY_ID }}
         key: ${{ secrets.PAKETO_BOT_GPG_SIGNING_KEY }}
 
@@ -38,15 +87,15 @@ jobs:
       if: ${{ steps.commit.outputs.commit_sha != '' }}
       uses: paketo-buildpacks/github-config/actions/pull-request/push-branch@main
       with:
-        branch: "automation/builder-toml"
+        branch: "automation/${{ matrix.builders.name }}-builder-toml"
 
     - name: Open Pull Request
       if: ${{ steps.commit.outputs.commit_sha != '' }}
       uses: paketo-buildpacks/github-config/actions/pull-request/open@main
       with:
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
-        title: "Updating builder.toml"
-        branch: "automation/builder-toml"
+        title: "Updating ${{ matrix.builders.name }} builder.toml"
+        branch: "automation/${{ matrix.builders.name }}-builder-toml"
 
   failure:
     name: Alert on Failure

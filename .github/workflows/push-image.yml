@@ -5,58 +5,88 @@ on:
     types:
     - published
 
+env:
+  BUILDERS_FILEPATH: "builders.json"
+
 jobs:
-  push:
-    name: Push
+  preparation:
+    name: Preparation
     runs-on: ubuntu-24.04
+    outputs:
+      builders: ${{ steps.get-builders.outputs.builders }}
+      tag: ${{ steps.event.outputs.tag }}
     steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+
+    - name: Get Builders
+      id: get-builders
+      run: |
+        builders=$(jq -n -c '[]')
+
+        if [ -f ${{ env.BUILDERS_FILEPATH }} ]; then
+          builders=$(jq -c '.builders' ${{ env.BUILDERS_FILEPATH }})
+        else
+          # Strip off the Github org prefix from repo name
+          # paketo-buildpacks/builder-with-some-name --> builder-with-some-name
+          registry_repo=$(echo "${{ github.repository }}" | sed 's/^.*\///')
+          builders=$(jq -n -c '[
+              {
+                "name": "'"${registry_repo}"'",
+                "path": ".",
+                "container_repository": "'"${registry_repo}"'"
+              }
+            ]')
+        fi
+
+        # Filter only the necessary fields
+        builders=$(echo "$builders" | jq 'map({
+          name,
+          path,
+          container_repository
+        })')
+
+        builders=$(jq -c <<< "$builders")
+        echo "builders=$builders"
+        echo "builders=$builders" >> "$GITHUB_OUTPUT"
 
     - name: Parse Event
       id: event
       run: |
         echo "tag=$(jq -r '.release.tag_name' "${GITHUB_EVENT_PATH}" | sed s/^v//)" >> "$GITHUB_OUTPUT"
 
+  push:
+    name: Push
+    needs: preparation
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        builders: ${{ fromJSON(needs.preparation.outputs.builders) }}
+    steps:
+
     - name: Checkout
       uses: actions/checkout@v5
 
-    - name: Get pack version
-      id: pack-version
-      run: |
-        version=$(jq -r .pack "scripts/.util/tools.json")
-        echo "version=${version#v}" >> "$GITHUB_OUTPUT"
-
-    - name: Install Global Pack
-      uses: buildpacks/github-actions/setup-pack@main
-      with:
-        pack-version: ${{ steps.pack-version.outputs.version }}
-
-    - name: Enable Experimental Pack Features
-      run: |
-        if [ -f "scripts/options.json" ] && jq -e -r .pack_config_enable_experimental "scripts/options.json" > /dev/null; then
-          pack config experimental true
-        fi
-
-    - name: Create Builder Image
-      run: |
-        pack builder create builder --config builder.toml
-
-    - name: Push To Dockerhub
+    - name: Create Builder Image and Push To Dockerhub
       env:
         PAKETO_BUILDPACKS_DOCKERHUB_USERNAME: ${{ secrets.PAKETO_BUILDPACKS_DOCKERHUB_USERNAME }}
         PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD: ${{ secrets.PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD }}
         GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
       run: |
+        # shellcheck source=./scripts/.util/tools.sh
+        source "./scripts/.util/tools.sh"
+
+        util::tools::crane::install --directory "./.bin"
+
         DOCKERHUB_ORG="${GITHUB_REPOSITORY_OWNER/-/}" # translates 'paketo-buildpacks' to 'paketobuildpacks'
-        # Strip off the Github org prefix from repo name
-        # paketo-buildpacks/builder-with-some-name --> builder-with-some-name
-        registry_repo=$(echo "${{ github.repository }}" | sed 's/^.*\///')
+        container_repository=${{ matrix.builders.container_repository }}
 
         echo "${PAKETO_BUILDPACKS_DOCKERHUB_PASSWORD}" | docker login --username "${PAKETO_BUILDPACKS_DOCKERHUB_USERNAME}" --password-stdin
-        docker tag builder "${DOCKERHUB_ORG}/${registry_repo}:latest"
-        docker tag builder "${DOCKERHUB_ORG}/${registry_repo}:${{ steps.event.outputs.tag }}"
 
-        docker push "${DOCKERHUB_ORG}/${registry_repo}:latest"
-        docker push "${DOCKERHUB_ORG}/${registry_repo}:${{ steps.event.outputs.tag }}"
+        ./scripts/publish.sh --builder-toml-path "${{ matrix.builders.path }}/builder.toml" \
+          --builder-image-ref "${DOCKERHUB_ORG}/${container_repository}:${{ needs.preparation.outputs.tag }}"
+
+        ./.bin/crane copy "${DOCKERHUB_ORG}/${container_repository}:${{ needs.preparation.outputs.tag }}" "${DOCKERHUB_ORG}/${container_repository}:latest"
 
   failure:
     name: Alert on Failure
