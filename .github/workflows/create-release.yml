@@ -18,7 +18,7 @@ jobs:
       builders: ${{ steps.get-builders.outputs.builders }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Get Builders
       id: get-builders
@@ -59,7 +59,7 @@ jobs:
       builders_changed: ${{ steps.compare_previous_release.outputs.builders_changed }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0  # gets full history
 
@@ -92,7 +92,7 @@ jobs:
         builders: ${{ fromJSON(needs.preparation.outputs.builders) }}
     services:
       registry:
-        image: registry:2
+        image: registry:3
         ports:
           - 5000:5000
     outputs:

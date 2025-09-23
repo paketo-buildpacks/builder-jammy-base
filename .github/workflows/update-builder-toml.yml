@@ -18,7 +18,7 @@ jobs:
       builders: ${{ steps.get-builders.outputs.builders }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Get Builders
       id: get-builders
