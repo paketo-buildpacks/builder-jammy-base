@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       builders: ${{ steps.get-builders.outputs.builders }}
+      combos: ${{ steps.get_combos.outputs.combos }}
     steps:
     - name: Checkout
       uses: actions/checkout@v5
@@ -35,7 +36,8 @@ jobs:
               {
                 "name": "'"${registry_repo}"'",
                 "path": ".",
-                "container_repository": "'"${registry_repo}"'"
+                "container_repository": "'"${registry_repo}"'",
+                "test_runners": ["ubuntu-24.04"]
               }
             ]')
         fi
@@ -44,12 +46,39 @@ jobs:
         builders=$(echo "$builders" | jq 'map({
           name,
           path,
-          container_repository
+          container_repository,
+          test_runners
         })')
 
         builders=$(jq -c <<< "$builders")
         echo "builders=$builders"
         echo "builders=$builders" >> "$GITHUB_OUTPUT"
+
+    - name: Get Combos
+      id: get_combos
+      run: |
+        builders=$(echo '${{ steps.get-builders.outputs.builders }}' | jq -c '.[]')
+        combos=$(jq -n -c '[]')
+
+        for builder in $builders; do
+          runners=$(echo $builder | jq -r '.test_runners[]')
+          builder_name=$(echo $builder | jq -r '.name')
+          builder_path=$(echo $builder | jq -r '.path')
+          for runner in $runners; do
+            combos=$(
+              jq \
+                --arg builder_name "$builder_name" \
+                --arg runner "$runner" \
+                --arg builder_path "$builder_path" \
+                '. + [{"builder": $builder_name, "runner": $runner, "path": $builder_path}]' \
+                <<< "$combos"
+            )
+          done
+        done
+
+        combos=$(jq -c <<< "$combos")
+        echo "combos=$combos"
+        echo "combos=$combos" >> "$GITHUB_OUTPUT"
 
   builder_files_changed:
     name: Builder Files Changed
@@ -84,9 +113,29 @@ jobs:
 
   smoke:
     name: Smoke Test
-    runs-on: ubuntu-24.04
     needs: [preparation, builder_files_changed]
     if: ${{ needs.builder_files_changed.outputs.builders_changed == 'true' }}
+    strategy:
+      matrix:
+        combos: ${{ fromJSON(needs.preparation.outputs.combos) }}
+    runs-on: ${{ matrix.combos.runner }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+
+    - name: Setup Go
+      uses: actions/setup-go@v6
+      with:
+        go-version-file: go.mod
+
+    - name: Run Smoke Tests
+      run: ./scripts/smoke.sh --builder-dir "${{ matrix.combos.path }}"
+
+  get_builders_info:
+    name: Get Builders Info
+    runs-on: ubuntu-24.04
+    needs: [preparation, builder_files_changed, smoke]
     strategy:
       matrix:
         builders: ${{ fromJSON(needs.preparation.outputs.builders) }}
@@ -96,7 +145,7 @@ jobs:
         ports:
           - 5000:5000
     outputs:
-      release_notes: ${{ steps.notes.outputs.body }}
+      builder_info: ${{ steps.notes.outputs.body }}
     steps:
     - name: Checkout
       uses: actions/checkout@v5
@@ -117,11 +166,7 @@ jobs:
       with:
         pack-version: ${{ steps.pack-version.outputs.version }}
 
-    - name: Run Smoke Tests
-      run: |
-        ./scripts/smoke.sh --builder-dir "${{ matrix.builders.path }}"
-
-    - name: Generate builder info
+    - name: Builder info
       id: notes
       run: |
         registry_builder_name=localhost:5000/${{ matrix.builders.name }}
@@ -144,7 +189,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-24.04
-    needs: [smoke, preparation]
+    needs: [preparation, get_builders_info]
     steps:
     - name: Checkout With History
       uses: actions/checkout@v5
@@ -259,8 +304,8 @@ jobs:
   failure:
     name: Alert on Failure
     runs-on: ubuntu-24.04
-    needs: [ smoke, release ]
-    if: ${{ always() && needs.smoke.result == 'failure' ||  needs.release.result == 'failure' }}
+    needs: [ smoke, release, get_builders_info, preparation ]
+    if: ${{ always() && needs.smoke.result == 'failure' ||  needs.release.result == 'failure' || needs.get_builders_info.result == 'failure' || needs.preparation.result == 'failure' }}
     steps:
     - name: File Failure Alert Issue
       uses: paketo-buildpacks/github-config/actions/issue/file@main
