@@ -22,6 +22,8 @@ function main() {
   builderDir=""
   builderArray=()
   targetPlatform=""
+  localRegistryUrl=""
+  pushBuilderToLocalRegistry=""
 
   while [[ "${#}" != 0 ]]; do
     case "${1}" in
@@ -43,6 +45,16 @@ function main() {
 
       --target-platform)
         targetPlatform="${2}"
+        shift 2
+        ;;
+
+      --local-registry-url)
+        localRegistryUrl="${2}"
+        shift 2
+        ;;
+
+      --push-builder-to-local-registry)
+        pushBuilderToLocalRegistry="${2}"
         shift 2
         ;;
 
@@ -93,18 +105,23 @@ function main() {
 
   tools::install "${token}"
 
-  if [ -f $OPTIONS_JSON ]; then
+  if [ "${pushBuilderToLocalRegistry}" != "" ]; then
+    if [[ "${pushBuilderToLocalRegistry}" != "true" && "${pushBuilderToLocalRegistry}" != "false" ]]; then
+      util::print::error "--push-builder-to-local-registry must be 'true' or 'false'"
+    fi
+    util::print::info "Using command line argument for push_builder_to_local_registry: ${pushBuilderToLocalRegistry}"
+  elif [ -f $OPTIONS_JSON ]; then
     pushBuilderToLocalRegistry="$(jq -r '.push_builder_to_local_registry //false' $OPTIONS_JSON)"
   else
     pushBuilderToLocalRegistry="false"
   fi
 
-  localRegistryUrl=""
+  trap 'cleanup "$registryPid" "$builderName"' EXIT
+
   # Set up local registry to push the builder(s)
-  if [[ "${pushBuilderToLocalRegistry}" == "true" ]]; then
+  if [[ "${pushBuilderToLocalRegistry}" == "true" && "${localRegistryUrl}" == "" ]]; then
     registryPort=$(get::random::port)
     registryPid=$(local::registry::start $registryPort)
-    # trap 'kill $registryPid' EXIT
     localRegistryUrl="127.0.0.1:$registryPort"
     util::print::info "Started local registry at ${localRegistryUrl} with PID ${registryPid}"
   fi
@@ -142,6 +159,19 @@ function main() {
   util::print::success "** GO Test Succeeded for all builders**"
 }
 
+function cleanup (){
+  local registryPid builderName
+  registryPid="${1}"
+  builderName="${2}"
+
+  if [[ "${registryPid}" != "" ]]; then
+    kill "${registryPid}"
+  fi
+  if [[ "${builderName}" != "" ]]; then
+    docker rmi "${builderName}"
+  fi
+}
+
 function usage() {
   cat <<-USAGE
 smoke.sh [OPTIONS]
@@ -149,12 +179,16 @@ smoke.sh [OPTIONS]
 Runs the smoke test suite.
 
 OPTIONS
-  --help        -h         prints the command usage
-  --name <name> -n <name>  sets the name of the builder that is built for testing
-  --token <token>          Token used to download assets from GitHub (e.g. jam, pack, etc) (optional)
-  --builder-dir <dir>      sets the directory of the builder to test. Defaults to the current directory.
-  --target-platform        sets the target platform to build the builder image for. E.g. linux/amd64, linux/arm64, etc.
-                           Defaults host machine's OS/arch.
+  --help        -h                  prints the command usage
+  --name <name> -n <name>           sets the name of the builder that is built for testing
+  --token <token>                   token used to download assets from GitHub (e.g. jam, pack, etc) (optional)
+  --builder-dir <dir>               sets the directory of the builder to test. Defaults to the current directory.
+  --target-platform                 sets the target platform to build the builder image for. E.g. linux/amd64, linux/arm64, etc.
+                                    Defaults host machine's OS/arch.
+  --local-registry-url              sets the local registry URL to push the builder image to. E.g. 127.0.0.1:5000
+  --push-builder-to-local-registry  if "true", pushes the builder image to a local registry.
+                                    Defaults value false or the value in scripts/options.json if the file exists.
+                                    Note: if true and --local-registry-url is not set, a local registry will be started on a random port.
 USAGE
 }
 

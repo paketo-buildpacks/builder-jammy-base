@@ -3,11 +3,70 @@ name: Test Builder
 on:
   workflow_dispatch: {}
 
+env:
+  BUILDERS_FILEPATH: "builders.json"
+
 jobs:
+  preparation:
+    name: Preparation
+    runs-on: ubuntu-24.04
+    outputs:
+      combos: ${{ steps.get_combos.outputs.combos }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+
+    - name: Get Combos
+      id: get_combos
+      run: |
+        builders=$(jq -n -c '[]')
+
+        if [ -f ${{ env.BUILDERS_FILEPATH }} ]; then
+          builders=$(jq -c '.builders' ${{ env.BUILDERS_FILEPATH }})
+        else
+          # Strip off the Github org prefix from repo name
+          # paketo-buildpacks/builder-with-some-name --> builder-with-some-name
+          registry_repo=$(echo "${{ github.repository }}" | sed 's/^.*\///')
+          builders=$(jq -n -c '[
+              {
+                "name": "'"${registry_repo}"'",
+                "path": ".",
+                "container_repository": "'"${registry_repo}"'",
+                "test_runners": ["ubuntu-24.04"]
+              }
+            ]' | jq -c '.[]')
+        fi
+
+        combos=$(jq -n -c '[]')
+
+        for builder in $builders; do
+          runners=$(echo $builder | jq -r '.test_runners[]')
+          builder_name=$(echo $builder | jq -r '.name')
+          builder_path=$(echo $builder | jq -r '.path')
+          for runner in $runners; do
+            combos=$(
+              jq \
+                --arg builder_name "$builder_name" \
+                --arg runner "$runner" \
+                --arg builder_path "$builder_path" \
+                '. + [{"builder": $builder_name, "runner": $runner, "path": $builder_path}]' \
+                <<< "$combos"
+            )
+          done
+        done
+
+        combos=$(jq -c <<< "$combos")
+        echo "combos=$combos"
+        echo "combos=$combos" >> "$GITHUB_OUTPUT"
 
   smoke:
     name: Smoke Test
-    runs-on: ubuntu-24.04
+    needs: preparation
+    strategy:
+      matrix:
+        combos: ${{ fromJSON(needs.preparation.outputs.combos) }}
+    runs-on: ${{ matrix.combos.runner }}
+
     steps:
     - name: Checkout
       uses: actions/checkout@v5
@@ -18,4 +77,4 @@ jobs:
         go-version-file: go.mod
 
     - name: Run Smoke Tests
-      run: ./scripts/smoke.sh
+      run: ./scripts/smoke.sh --builder-dir "${{ matrix.combos.path }}"
