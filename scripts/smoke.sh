@@ -168,7 +168,7 @@ function cleanup (){
     kill "${registryPid}"
   fi
   if [[ "${builderName}" != "" ]]; then
-    docker rmi "${builderName}"
+    docker rmi "${builderName}" || true
   fi
 }
 
