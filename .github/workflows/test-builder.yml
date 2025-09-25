@@ -34,8 +34,10 @@ jobs:
                 "container_repository": "'"${registry_repo}"'",
                 "test_runners": ["ubuntu-24.04"]
               }
-            ]' | jq -c '.[]')
+            ]')
         fi
+
+        builders=$(jq -c '.[]' <<< "$builders")
 
         combos=$(jq -n -c '[]')
 
