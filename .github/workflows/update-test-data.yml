@@ -1,0 +1,127 @@
+name: Update test data from samples
+
+on:
+  schedule:
+  - cron: '47 8 * * *' # daily at 08:46 UTC
+  workflow_dispatch: {}
+
+concurrency: test_data_update
+
+env:
+  BUILDERS_FILEPATH: "builders.json"
+
+jobs:
+  build:
+    name: Create PR to sync test data with the samples
+    runs-on: ubuntu-24.04
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v5
+      with:
+        token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
+
+    - name: ${{ env.BUILDERS_FILEPATH }} exists
+      id: builder_file_exists
+      run: |
+        if [ ! -f ${{ env.BUILDERS_FILEPATH }} ]; then
+          echo "${{ env.BUILDERS_FILEPATH }} does not exist, skipping"
+          echo "exists=false" >> $GITHUB_OUTPUT
+        else
+          echo "exists=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Checkout paketo-buildpacks samples
+      if: ${{ steps.builder_file_exists.outputs.exists == 'true' }}
+      uses: actions/checkout@v5
+      with:
+        repository: paketo-buildpacks/samples
+        path: samples
+
+    - name: Checkout Branch
+      if: ${{ steps.builder_file_exists.outputs.exists == 'true' }}
+      uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
+      with:
+        branch: automation/testdata/update
+
+    - name: Run the sync action
+      if: ${{ steps.builder_file_exists.outputs.exists == 'true' }}
+      run: |
+        builders=$(jq -c '.builders.[]' ${{ env.BUILDERS_FILEPATH }})
+        for builder in $builders; do
+            test_data=$(echo $builder | jq -c '.test_data // []' | jq -c '.[]')
+            for td in $test_data; do
+                sample_dir=$(echo $td | jq -r '.sample_dir // empty')
+                if [ -z "$sample_dir" ]; then
+                  echo "sample_dir can not be empty"
+                  exit 1
+                fi
+
+                test_dir=$(echo $td | jq -r '.test_dir // empty')
+                if [ -z "$test_dir" ]; then
+                  echo "test_dir can not be empty"
+                  exit 1
+                fi
+
+                echo
+                echo "syncing $sample_dir to $test_dir"
+                echo
+
+                args=()
+                args+=("-vr" "--delete" "samples/$sample_dir/" "$test_dir/")
+
+                rsync ${args[*]}
+
+                echo
+                echo "sync complete"
+                echo
+            done
+        done
+
+    - name: Cleanup
+      if: ${{ steps.builder_file_exists.outputs.exists == 'true' }}
+      run: rm -rf samples
+
+    - name: Commit
+      if: ${{ steps.builder_file_exists.outputs.exists == 'true' }}
+      id: commit
+      uses: paketo-buildpacks/github-config/actions/pull-request/create-commit@main
+      with:
+        message: "Updating test data from samples"
+        pathspec: "."
+        keyid: ${{ secrets.PAKETO_BOT_GPG_SIGNING_KEY_ID }}
+        key: ${{ secrets.PAKETO_BOT_GPG_SIGNING_KEY }}
+
+    - name: Push Branch
+      if: ${{ steps.commit.outputs.commit_sha != '' }}
+      uses: paketo-buildpacks/github-config/actions/pull-request/push-branch@main
+      with:
+        branch: automation/testdata/update
+
+    - name: Open Pull Request
+      if: ${{ steps.commit.outputs.commit_sha != '' }}
+      uses: paketo-buildpacks/github-config/actions/pull-request/open@main
+      with:
+        token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
+        title: "Updates test data from samples"
+        branch: automation/testdata/update
+        label: "semver:patch"
+
+  failure:
+    name: Alert on Failure
+    runs-on: ubuntu-24.04
+    needs: [build]
+    if: ${{ always() && needs.build.result == 'failure' }}
+    steps:
+    - name: File Failure Alert Issue
+      uses: paketo-buildpacks/github-config/actions/issue/file@main
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        repo: ${{ github.repository }}
+        label: "failure:update-github-config"
+        comment_if_exists: true
+        issue_title: "Failure: Update GitHub config workflow"
+        issue_body: |
+          Update GitHub config workflow [failed](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}).
+        comment_body: |
+           Another failure occurred: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
