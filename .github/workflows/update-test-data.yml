@@ -57,18 +57,32 @@ jobs:
                   exit 1
                 fi
 
+                sample_dir="samples/${sample_dir}/"
+
                 test_dir=$(echo $td | jq -r '.test_dir // empty')
                 if [ -z "$test_dir" ]; then
                   echo "test_dir can not be empty"
                   exit 1
                 fi
+                test_dir="${test_dir}/"
 
                 echo
-                echo "syncing $sample_dir to $test_dir"
+                echo "syncing from ${sample_dir} to ${test_dir}"
                 echo
 
-                args=()
-                args+=("-vr" "--delete" "samples/$sample_dir/" "$test_dir/")
+                args=(
+                  --recursive
+                  "${sample_dir}"
+                  "${test_dir}"
+                  --delete
+                )
+
+                if [[ -f "${test_dir}/.syncignore" ]]; then
+                  args+=(
+                    --exclude=".syncignore"
+                    --exclude-from="${test_dir}/.syncignore"
+                  )
+                fi
 
                 rsync ${args[*]}
 
