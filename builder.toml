@@ -5,8 +5,8 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "3.1.11"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/go:4.18.2"
-  version = "4.18.2"
+  uri = "docker://docker.io/paketobuildpacks/go:4.18.3"
+  version = "4.18.3"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/java-native-image:13.0.0"
@@ -17,24 +17,24 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "20.0.0"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/nodejs:9.10.0"
-  version = "9.10.0"
+  uri = "docker://docker.io/paketobuildpacks/nodejs:9.11.0"
+  version = "9.11.0"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/procfile:5.11.3"
   version = "5.11.3"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/python:2.37.0"
-  version = "2.37.0"
+  uri = "docker://docker.io/paketobuildpacks/python:2.37.1"
+  version = "2.37.1"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/ruby:0.47.6"
   version = "0.47.6"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/web-servers:2.10.1"
-  version = "2.10.1"
+  uri = "docker://docker.io/paketobuildpacks/web-servers:2.10.2"
+  version = "2.10.2"
 
 [lifecycle]
   version = "0.20.14"
@@ -55,7 +55,7 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/go"
-    version = "4.18.2"
+    version = "4.18.3"
 
 [[order]]
 
@@ -73,19 +73,19 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/web-servers"
-    version = "2.10.1"
+    version = "2.10.2"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/nodejs"
-    version = "9.10.0"
+    version = "9.11.0"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/python"
-    version = "2.37.0"
+    version = "2.37.1"
 
 [[order]]
 
@@ -94,6 +94,6 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
     version = "5.11.3"
 
 [stack]
-  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.174"
+  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.175"
   id = "io.buildpacks.stacks.jammy"
   run-image = "index.docker.io/paketobuildpacks/run-jammy-base:latest"
