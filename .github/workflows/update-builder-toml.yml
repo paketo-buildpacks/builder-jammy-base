@@ -2,7 +2,7 @@ name: Update builder.toml files and Send Pull Request
 
 on:
   schedule:
-  - cron: '27 2,14 * * *' # daily at 02:27 and 14:27 UTC
+  - cron: '27 2,14 * * *'  # daily at 02:27 and 14:27 UTC
   workflow_dispatch: {}
 
 concurrency: builder_update
@@ -58,6 +58,7 @@ jobs:
       commit_sha: ${{ steps.commit.outputs.commit_sha }}
     needs: preparation
     strategy:
+      max-parallel: 1
       matrix:
         builders: ${{ fromJSON(needs.preparation.outputs.builders) }}
 
@@ -92,15 +93,24 @@ jobs:
         branch: "automation/builder-toml-update"
 
     - name: Output commit sha
+      if: ${{ steps.commit.outputs.commit_sha != '' }}
       run: echo "commit_sha=${{ steps.commit.outputs.commit_sha }}" >> "$GITHUB_OUTPUT"
 
   open-pull-request:
     name: Open pull request
     runs-on: ubuntu-24.04
     needs: update
+    if: ${{ needs.update.outputs.commit_sha != '' }}
     steps:
+    - name: Check out
+      uses: actions/checkout@v5
+
+    - name: Checkout branch
+      uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
+      with:
+        branch: "automation/builder-toml-update"
+
     - name: Open Pull Request
-      if: ${{ needs.update.outputs.commit_sha != '' }}
       uses: paketo-buildpacks/github-config/actions/pull-request/open@main
       with:
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
