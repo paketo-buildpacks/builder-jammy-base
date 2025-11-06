@@ -2,7 +2,7 @@ name: Update test data from samples
 
 on:
   schedule:
-  - cron: '46 4 * * *' # daily at 04:46 UTC
+  - cron: '46 4 * * *'  # daily at 04:46 UTC
   workflow_dispatch: {}
 
 concurrency: test_data_update
