@@ -17,7 +17,7 @@ jobs:
       tag: ${{ steps.event.outputs.tag }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Get Builders
       id: get-builders
@@ -65,7 +65,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Create Builder Image and Push To Dockerhub
       env:

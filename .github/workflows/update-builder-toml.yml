@@ -18,7 +18,7 @@ jobs:
       builders: ${{ steps.get-builders.outputs.builders }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Get Builders
       id: get-builders
@@ -64,7 +64,7 @@ jobs:
 
     steps:
     - name: Check out
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Checkout branch
       uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
@@ -103,7 +103,7 @@ jobs:
     if: ${{ needs.update.outputs.commit_sha != '' }}
     steps:
     - name: Check out
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Checkout branch
       uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
