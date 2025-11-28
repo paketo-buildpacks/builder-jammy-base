@@ -3,16 +3,12 @@
     "extends": [
         "github>paketo-buildpacks/github-config//renovate/renovate-default"
     ],
-    "github-actions": {
-        "enabled": false
-    },
+    "enabledManagers": ["gomod"],
     "packageRules": [
         {
-            "matchManagers": [
-                "gomod"
-            ],
-            "groupName": "go-modules",
-            "groupTitle": "Bump the {{groupName}} with {{updates.length}} updates"
+            "matchPaths": ["**/smoke/testdata/**"],
+            "enabled": false,
+            "description": "The test data are updated by syncing them with the samples."
         }
     ]
 }
