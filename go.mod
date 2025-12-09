@@ -3,7 +3,7 @@ module github.com/paketo-buildpacks/builder-jammy-base
 go 1.25.5
 
 require (
-	github.com/onsi/gomega v1.38.2
+	github.com/onsi/gomega v1.38.3
 	github.com/paketo-buildpacks/occam v0.31.0
 	github.com/sclevine/spec v1.4.0
 )
