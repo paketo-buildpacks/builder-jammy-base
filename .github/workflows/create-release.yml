@@ -181,7 +181,7 @@ jobs:
           | grep -v 'Warning' > "${{ matrix.builders.name }}-info.md"
 
     - name: Upload info for ${{ matrix.builders.name }}
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: "${{ matrix.builders.name }}-info.md"
         path: "${{ matrix.builders.name }}-info.md"
