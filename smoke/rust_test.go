@@ -43,9 +43,13 @@ func testRust(t *testing.T, context spec.G, it spec.S) {
 		})
 
 		it.After(func() {
-			Expect(docker.Container.Remove.Execute(container.ID)).To(Succeed())
-			Expect(docker.Volume.Remove.Execute(occam.CacheVolumeNames(name))).To(Succeed())
-			Expect(docker.Image.Remove.Execute(image.ID)).To(Succeed())
+			if container.ID != "" {
+				_ = docker.Container.Remove.Execute(container.ID)
+			}
+			_ = docker.Volume.Remove.Execute(occam.CacheVolumeNames(name))
+			if image.ID != "" {
+				_ = docker.Image.Remove.Execute(image.ID)
+			}
 			Expect(os.RemoveAll(source)).To(Succeed())
 		})
 
