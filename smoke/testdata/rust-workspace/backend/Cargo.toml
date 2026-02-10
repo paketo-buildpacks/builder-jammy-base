@@ -1,0 +1,12 @@
+[package]
+name = "dioxus-app-backend"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "dioxus-app-backend"
+path = "src/main.rs"
+
+[dependencies]
+dioxus-app-common = { path = "../common" }
+ctrlc = "3.4"
