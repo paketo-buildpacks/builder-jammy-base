@@ -1,3 +1,8 @@
 .bin/
 smoke/testdata/rust/target/
 smoke/testdata/rust/Cargo.lock
+<<<<<<< HEAD
+=======
+smoke/testdata/rust-workspace/target
+smoke/testdata/rust-workspace/Cargo.lock
+>>>>>>> 96420da (feat: add Rust buildpack and smoke test)
