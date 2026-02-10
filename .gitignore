@@ -1,1 +1,3 @@
 .bin/
+smoke/testdata/rust/target/
+smoke/testdata/rust/Cargo.lock
