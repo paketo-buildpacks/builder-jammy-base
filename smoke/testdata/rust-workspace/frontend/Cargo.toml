@@ -3,5 +3,13 @@ name = "dioxus-app-frontend"
 version.workspace = true
 edition.workspace = true
 
+[lib]
+
+[[bin]]
+name = "dioxus-app-frontend"
+path = "src/main.rs"
+
 [dependencies]
+dioxus = { version = "0.7", features = ["fullstack"] }
 dioxus-app-common = { path = "../common" }
+ctrlc = "3.4"

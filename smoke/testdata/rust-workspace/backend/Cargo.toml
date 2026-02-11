@@ -7,6 +7,13 @@ edition.workspace = true
 name = "dioxus-app-backend"
 path = "src/main.rs"
 
+[features]
+default = []
+server = ["dioxus/server"]
+
 [dependencies]
+dioxus = { version = "0.7", features = ["fullstack"] }
 dioxus-app-common = { path = "../common" }
+dioxus-app-frontend = { path = "../frontend" }
+tokio = { version = "1", features = ["full"] }
 ctrlc = "3.4"
