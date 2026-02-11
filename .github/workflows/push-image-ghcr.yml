@@ -3,6 +3,11 @@
 name: Push Builder Image to GHCR
 
 on:
+  push:
+    branches: [main, rust-builder]
+    paths:
+      - "builder.toml"
+      - ".github/workflows/push-image-ghcr.yml"
   release:
     types: [published]
   workflow_dispatch:
@@ -34,6 +39,12 @@ jobs:
             echo "tag=${t#v}" >> "$GITHUB_OUTPUT"
           elif [[ -n "${{ github.event.inputs.tag }}" ]]; then
             echo "tag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+              echo "tag=latest" >> "$GITHUB_OUTPUT"
+            else
+              echo "tag=${GITHUB_REF#refs/heads/}-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+            fi
           else
             echo "tag=latest" >> "$GITHUB_OUTPUT"
           fi

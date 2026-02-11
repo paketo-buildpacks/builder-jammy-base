@@ -71,4 +71,4 @@ docker run --rm -e PORT=8080 -p 8080:8080 rust-workspace-backend /workspace/bin/
 docker run --rm -e PORT=8081 -p 8081:8081 rust-workspace-frontend /workspace/bin/dioxus-app-frontend
 ```
 
-**Note:** The backend expects a `public/` directory (for Dioxus static assets). The repo includes `public/.gitkeep`. For pack builds, the buildpack may need to copy `public/` into the output layer.
+**Note:** The backend expects a `public/` directory (for Dioxus static assets). The repo includes `public/.gitkeep`. The `project.toml` defines an inline buildpack that copies `public/` into the output layer — canonical, no buildpack magic.
