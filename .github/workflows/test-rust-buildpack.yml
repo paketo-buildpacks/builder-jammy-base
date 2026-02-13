@@ -1,0 +1,49 @@
+# Test Rust buildpack (ghcr.io/octopilot/rust) via builder-jammy-base smoke tests.
+# Runs only Rust smoke tests for faster feedback when validating Rust buildpack releases.
+#
+# See docs/RUST-TEST-PROCESS-AUDIT.md for full process documentation.
+
+name: Test Rust Buildpack
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+    paths:
+      - "builder.toml"
+      - "smoke/rust_test.go"
+      - "smoke/testdata/rust/**"
+      - "smoke/testdata/rust-workspace/**"
+      - ".github/workflows/test-rust-buildpack.yml"
+
+jobs:
+  rust-smoke:
+    name: Rust Smoke Tests
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - name: Get pack version
+        id: pack-version
+        run: |
+          version=$(jq -r .pack "scripts/.util/tools.json")
+          echo "version=${version#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Install Pack
+        uses: buildpacks/github-actions/setup-pack@main
+        with:
+          pack-version: ${{ steps.pack-version.outputs.version }}
+
+      - name: Create builder
+        run: pack builder create testbuilder --config builder.toml
+
+      - name: Run Rust smoke tests
+        run: |
+          GOMAXPROCS=4 go test -count=1 -timeout 300s ./smoke/... -v -run "TestSmoke/Smoke/Rust" --name "testbuilder"
