@@ -38,6 +38,7 @@ func TestSmoke(t *testing.T) {
 	suite("Python", testPython)
 	suite("Ruby", testRuby)
 	suite("Rust", testRust)
+	suite("Helm", testHelm)
 	suite("Web Servers", testWebServers)
 	suite.Run(t)
 }
