@@ -40,6 +40,10 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   uri = "docker://ghcr.io/octopilot/rust:0.1.6"
   version = "0.1.6"
 
+[[buildpacks]]
+  uri = "docker://ghcr.io/octopilot/helm:0.1.0"
+  version = "0.1.0"
+
 [lifecycle]
   version = "0.21.1"
 
@@ -102,6 +106,12 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   [[order.group]]
     id = "octopilot/rust"
     version = "0.1.6"
+
+[[order]]
+
+  [[order.group]]
+    id = "octopilot/helm"
+    version = "0.1.0"
 
 [stack]
   build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.197"
