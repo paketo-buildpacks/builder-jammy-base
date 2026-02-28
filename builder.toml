@@ -1,4 +1,4 @@
-description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, .NET Core, Node.js, Python, Apache HTTPD, NGINX and Procfile"
+description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, .NET Core, Node.js, Python, Apache HTTPD, NGINX, Procfile, Rust, and Helm chart OCI"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/dotnet-core:4.1.0"
@@ -35,6 +35,14 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/web-servers:4.1.0"
   version = "4.1.0"
+
+[[buildpacks]]
+  uri = "docker://ghcr.io/octopilot/rust:0.1.6"
+  version = "0.1.6"
+
+[[buildpacks]]
+  uri = "docker://ghcr.io/octopilot/helm:0.1.0"
+  version = "0.1.0"
 
 [lifecycle]
   version = "0.21.5"
@@ -93,7 +101,19 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
     id = "paketo-buildpacks/procfile"
     version = "5.13.0"
 
+[[order]]
+
+  [[order.group]]
+    id = "octopilot/rust"
+    version = "0.1.6"
+
+[[order]]
+
+  [[order.group]]
+    id = "octopilot/helm"
+    version = "0.1.0"
+
 [stack]
   build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.202"
   id = "io.buildpacks.stacks.jammy"
-  run-image = "index.docker.io/paketobuildpacks/run-jammy-base:latest"
+  run-image = "index.docker.io/paketobuildpacks/run-jammy-base:0.1.196"

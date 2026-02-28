@@ -5,7 +5,7 @@
 This builder uses the [Paketo Jammy Base
 Stack](https://github.com/paketo-buildpacks/jammy-base-stack) (Ubuntu Jammy
 Jellyfish build and run images) with buildpacks for Java,
-Java Native Image, Go, Python, .NET, Node.js, Apache HTTPD, NGINX and Procfile.
+Java Native Image, Go, Python, .NET, Node.js, Apache HTTPD, NGINX, Procfile and Rust.
 
 To see which versions of build and run images, buildpacks, and the lifecycle
 that are contained within a given builder version, see the
