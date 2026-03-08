@@ -37,10 +37,6 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "4.2.0"
 
 [[buildpacks]]
-  uri = "docker://ghcr.io/octopilot/rust:0.1.0"
-  version = "0.1.0"
-
-[[buildpacks]]
   uri = "docker://ghcr.io/octopilot/rust:0.1.8"
   version = "0.1.8"
 
@@ -104,12 +100,6 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   [[order.group]]
     id = "paketo-buildpacks/procfile"
     version = "5.13.0"
-
-[[order]]
-
-  [[order.group]]
-    id = "octopilot/rust"
-    version = "0.1.0"
 
 [[order]]
 
