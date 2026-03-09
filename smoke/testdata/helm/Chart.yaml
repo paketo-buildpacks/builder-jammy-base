@@ -1,0 +1,10 @@
+apiVersion: v2
+name: helm-smoke
+description: Minimal Helm chart for builder smoke test (has nginx dependency)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: nginx
+    version: "15.2.0"
+    repository: "https://charts.bitnami.com/bitnami"

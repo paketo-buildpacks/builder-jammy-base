@@ -1,0 +1,76 @@
+# Build and push the builder image to ghcr.io/octopilot/builder-jammy-base.
+# Use this workflow to publish the forked builder so you can use octopilot/builder-jammy-base.
+name: Push Builder Image to GHCR
+
+on:
+  push:
+    branches: [main, rust-builder]
+    paths:
+      - "builder.toml"
+      - ".github/workflows/push-image-ghcr.yml"
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag (default: from release or 'latest')"
+        required: false
+        default: ""
+
+env:
+  IMAGE: ghcr.io/octopilot/builder-jammy-base
+
+jobs:
+  push:
+    name: Build and Push
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set tag
+        id: tag
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            t="${GITHUB_REF#refs/tags/}"
+            echo "tag=${t#v}" >> "$GITHUB_OUTPUT"
+          elif [[ -n "${{ github.event.inputs.tag }}" ]]; then
+            echo "tag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+              echo "tag=latest" >> "$GITHUB_OUTPUT"
+            else
+              echo "tag=${GITHUB_REF#refs/heads/}-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install tools
+        run: |
+          source "./scripts/.util/tools.sh"
+          util::tools::pack::install --directory "./.bin" --token ""
+          util::tools::crane::install --directory "./.bin"
+          export PATH="${PWD}/.bin:${PATH}"
+
+      - name: Create builder image and push to GHCR
+        run: |
+          ./scripts/publish.sh \
+            --builder-toml-path "./builder.toml" \
+            --builder-image-ref "${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}"
+
+      - name: Tag as latest
+        if: steps.tag.outputs.tag != 'latest'
+        run: |
+          export PATH="${PWD}/.bin:${PATH}"
+          ./.bin/crane copy "${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}" "${{ env.IMAGE }}:latest"
