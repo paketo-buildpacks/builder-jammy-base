@@ -9,12 +9,12 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "4.19.7"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/java-native-image:14.1.0"
-  version = "14.1.0"
+  uri = "docker://docker.io/paketobuildpacks/java-native-image:14.2.0"
+  version = "14.2.0"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/java:21.2.0"
-  version = "21.2.0"
+  uri = "docker://docker.io/paketobuildpacks/java:21.3.0"
+  version = "21.3.0"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/nodejs:10.2.1"
@@ -61,13 +61,13 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/java-native-image"
-    version = "14.1.0"
+    version = "14.2.0"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/java"
-    version = "21.2.0"
+    version = "21.3.0"
 
 [[order]]
 
@@ -94,6 +94,6 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
     version = "5.13.1"
 
 [stack]
-  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.209"
+  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.210"
   id = "io.buildpacks.stacks.jammy"
   run-image = "index.docker.io/paketobuildpacks/run-jammy-base:latest"
