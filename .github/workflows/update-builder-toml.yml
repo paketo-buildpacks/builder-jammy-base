@@ -54,6 +54,9 @@ jobs:
   update:
     name: Update builder.toml
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: read   # so jam update-builder can list tags from ghcr.io/octopilot/*
     outputs:
       commit_sha: ${{ steps.commit.outputs.commit_sha }}
     needs: preparation
@@ -71,10 +74,17 @@ jobs:
       with:
         branch: "automation/builder-toml-update"
 
+    - name: Log in to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.OCTOPILOT_GITHUB_TOKEN }}
+
     - name: Update builder.toml
       uses: paketo-buildpacks/github-config/actions/builder/update@main
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.OCTOPILOT_GITHUB_TOKEN }}
         filename: "${{ matrix.builders.path }}/builder.toml"
 
     - name: Git commit
