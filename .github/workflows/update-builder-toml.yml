@@ -71,6 +71,12 @@ jobs:
       with:
         branch: "automation/builder-toml-update"
 
+    - name: Rebase branch
+      uses: paketo-buildpacks/github-config/actions/pull-request/rebase-branch@main
+      with:
+        keyid: ${{ secrets.PAKETO_BOT_GPG_SIGNING_KEY_ID }}
+        key: ${{ secrets.PAKETO_BOT_GPG_SIGNING_KEY }}
+
     - name: Update builder.toml
       uses: paketo-buildpacks/github-config/actions/builder/update@main
       with:
