@@ -65,6 +65,8 @@ jobs:
     steps:
     - name: Check out
       uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
 
     - name: Checkout branch
       uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
