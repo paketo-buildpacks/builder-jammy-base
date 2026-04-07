@@ -19,6 +19,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
 
     - name: Get Builders
       id: get-builders
@@ -28,7 +30,7 @@ jobs:
         if [ -f ${{ env.BUILDERS_FILEPATH }} ]; then
           builders=$(jq -c '.builders' ${{ env.BUILDERS_FILEPATH }})
         else
-          # Strip off the Github org prefix from repo name
+          # Strip off the GitHub org prefix from repo name
           # paketo-buildpacks/builder-with-some-name --> builder-with-some-name
           registry_repo=$(echo "${{ github.repository }}" | sed 's/^.*\///')
           builders=$(jq -n -c '[
@@ -51,23 +53,6 @@ jobs:
         echo "builders=$builders"
         echo "builders=$builders" >> "$GITHUB_OUTPUT"
 
-  update:
-    name: Update builder.toml
-    runs-on: ubuntu-24.04
-    outputs:
-      commit_sha: ${{ steps.commit.outputs.commit_sha }}
-    needs: preparation
-    strategy:
-      max-parallel: 1
-      matrix:
-        builders: ${{ fromJSON(needs.preparation.outputs.builders) }}
-
-    steps:
-    - name: Check out
-      uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-
     - name: Checkout branch
       uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
       with:
@@ -78,6 +63,32 @@ jobs:
       with:
         keyid: ${{ secrets.PAKETO_BOT_GPG_SIGNING_KEY_ID }}
         key: ${{ secrets.PAKETO_BOT_GPG_SIGNING_KEY }}
+        fail_on_rebase_failure: true
+
+    - name: Git push
+      uses: paketo-buildpacks/github-config/actions/pull-request/push-branch@main
+      with:
+        branch: "automation/builder-toml-update"
+        force: true
+
+  update:
+    name: Update builder.toml
+    runs-on: ubuntu-24.04
+    needs: preparation
+    strategy:
+      max-parallel: 1
+      matrix:
+        builders: ${{ fromJSON(needs.preparation.outputs.builders) }}
+
+    steps:
+    - name: Check out
+      uses: actions/checkout@v6
+
+
+    - name: Checkout branch
+      uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
+      with:
+        branch: "automation/builder-toml-update"
 
     - name: Update builder.toml
       uses: paketo-buildpacks/github-config/actions/builder/update@main
@@ -100,15 +111,10 @@ jobs:
       with:
         branch: "automation/builder-toml-update"
 
-    - name: Output commit sha
-      if: ${{ steps.commit.outputs.commit_sha != '' }}
-      run: echo "commit_sha=${{ steps.commit.outputs.commit_sha }}" >> "$GITHUB_OUTPUT"
-
   open-pull-request:
     name: Open pull request
     runs-on: ubuntu-24.04
     needs: update
-    if: ${{ needs.update.outputs.commit_sha != '' }}
     steps:
     - name: Check out
       uses: actions/checkout@v6
