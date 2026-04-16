@@ -124,7 +124,20 @@ jobs:
       with:
         branch: "automation/builder-toml-update"
 
+    - name: Check if branch has commits
+      id: check-if-commits
+      run: |
+       # get the number of commits in the branch
+       commits=$(git rev-list --count automation/builder-toml-update)
+       if [ "$commits" -eq 0 ]; then
+         echo "No commits in branch automation/builder-toml-update"
+         echo "commits=0" >> "$GITHUB_OUTPUT"
+       else
+         echo "commits=$commits" >> "$GITHUB_OUTPUT"
+       fi
+
     - name: Open Pull Request
+      if: ${{ steps.check-if-commits.outputs.commits == '0' }}
       uses: paketo-buildpacks/github-config/actions/pull-request/open@main
       with:
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
