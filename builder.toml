@@ -21,8 +21,8 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "10.2.6"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/procfile:5.13.1"
-  version = "5.13.1"
+  uri = "docker://docker.io/paketobuildpacks/procfile:5.13.2"
+  version = "5.13.2"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/python:2.44.6"
@@ -91,9 +91,9 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/procfile"
-    version = "5.13.1"
+    version = "5.13.2"
 
 [stack]
-  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.223"
+  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.224"
   id = "io.buildpacks.stacks.jammy"
   run-image = "index.docker.io/paketobuildpacks/run-jammy-base:latest"
