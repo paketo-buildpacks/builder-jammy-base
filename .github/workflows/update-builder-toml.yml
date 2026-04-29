@@ -84,7 +84,6 @@ jobs:
     - name: Check out
       uses: actions/checkout@v6
 
-
     - name: Checkout branch
       uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
       with:
@@ -137,7 +136,7 @@ jobs:
        fi
 
     - name: Open Pull Request
-      if: ${{ steps.check-if-commits.outputs.commits == '0' }}
+      if: ${{ steps.check-if-commits.outputs.commits != '0' }}
       uses: paketo-buildpacks/github-config/actions/pull-request/open@main
       with:
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
