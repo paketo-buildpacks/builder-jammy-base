@@ -1,8 +1,8 @@
 description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, .NET Core, Node.js, Python, Apache HTTPD, NGINX and Procfile"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/dotnet-core:4.5.1"
-  version = "4.5.1"
+  uri = "docker://docker.io/paketobuildpacks/dotnet-core:4.6.0"
+  version = "4.6.0"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/go:4.19.20"
@@ -17,24 +17,24 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "22.1.0"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/nodejs:10.5.1"
-  version = "10.5.1"
+  uri = "docker://docker.io/paketobuildpacks/nodejs:10.6.0"
+  version = "10.6.0"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/procfile:5.13.4"
   version = "5.13.4"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/python:2.53.0"
-  version = "2.53.0"
+  uri = "docker://docker.io/paketobuildpacks/python:2.54.0"
+  version = "2.54.0"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/ruby:2.0.1"
-  version = "2.0.1"
+  uri = "docker://docker.io/paketobuildpacks/ruby:2.1.0"
+  version = "2.1.0"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/web-servers:4.5.1"
-  version = "4.5.1"
+  uri = "docker://docker.io/paketobuildpacks/web-servers:4.6.0"
+  version = "4.6.0"
 
 [lifecycle]
   version = "0.21.14"
@@ -43,13 +43,13 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/ruby"
-    version = "2.0.1"
+    version = "2.1.0"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/dotnet-core"
-    version = "4.5.1"
+    version = "4.6.0"
 
 [[order]]
 
@@ -73,19 +73,19 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/web-servers"
-    version = "4.5.1"
+    version = "4.6.0"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/nodejs"
-    version = "10.5.1"
+    version = "10.6.0"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/python"
-    version = "2.53.0"
+    version = "2.54.0"
 
 [[order]]
 
