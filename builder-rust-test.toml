@@ -1,0 +1,18 @@
+description = "Minimal builder for Rust smoke test"
+
+[[buildpacks]]
+  uri = "../rust"
+  version = "0.0.1"
+
+[lifecycle]
+  version = "0.21.1"
+
+[[order]]
+  [[order.group]]
+    id = "octopilot/rust"
+    version = "0.0.1"
+
+[stack]
+  build-image = "docker.io/paketobuildpacks/build-jammy-base:0.1.196"
+  id = "io.buildpacks.stacks.jammy"
+  run-image = "index.docker.io/paketobuildpacks/run-jammy-base:latest"

@@ -1,0 +1,3 @@
+# Fetched by helm dependency build during smoke test
+charts/
+Chart.lock

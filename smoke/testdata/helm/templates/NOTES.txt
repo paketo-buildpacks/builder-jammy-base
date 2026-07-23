@@ -1,0 +1,2 @@
+Helm smoke test chart (with nginx dependency).
+Built by Octopilot Helm buildpack.
