@@ -29,8 +29,8 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "2.57.0"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/ruby:2.3.0"
-  version = "2.3.0"
+  uri = "docker://docker.io/paketobuildpacks/ruby:2.4.0"
+  version = "2.4.0"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/web-servers:4.8.0"
@@ -43,7 +43,7 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/ruby"
-    version = "2.3.0"
+    version = "2.4.0"
 
 [[order]]
 
