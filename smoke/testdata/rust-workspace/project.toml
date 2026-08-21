@@ -1,0 +1,23 @@
+# Project descriptor: canonical asset copy via inline buildpack.
+# Assets (public/, config/, etc.) are copied by app-defined inline buildpack,
+# not by buildpack magic. See https://buildpacks.io/docs/for-app-developers/how-to/build-inputs/use-inline-buildpacks
+
+[_]
+schema-version = "0.2"
+id = "io.buildpacks.rust-workspace"
+
+[[io.buildpacks.group]]
+uri = "docker://ghcr.io/octopilot/rust:0.1.5"
+
+[[io.buildpacks.group]]
+id = "rust-workspace/copy-public"
+
+[io.buildpacks.group.script]
+api = "0.10"
+inline = """
+set -e
+OUT="${CNB_OUTPUT_DIR:-/workspace}"
+APP="${CNB_BUILD_DIR:-/workspace}"
+[ -d "$APP/public" ] && cp -r "$APP/public" "$OUT/" || true
+[ -d "$APP/public" ] && mkdir -p "$OUT/bin" && cp -r "$APP/public" "$OUT/bin/" || true
+"""

@@ -53,27 +53,14 @@ jobs:
         echo "builders=$builders"
         echo "builders=$builders" >> "$GITHUB_OUTPUT"
 
-    - name: Checkout branch
-      uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
-      with:
-        branch: "automation/builder-toml-update"
-
-    - name: Rebase branch
-      uses: paketo-buildpacks/github-config/actions/pull-request/rebase-branch@main
-      with:
-        keyid: ${{ secrets.PAKETO_BOT_GPG_SIGNING_KEY_ID }}
-        key: ${{ secrets.PAKETO_BOT_GPG_SIGNING_KEY }}
-        fail_on_rebase_failure: true
-
-    - name: Git push
-      uses: paketo-buildpacks/github-config/actions/pull-request/push-branch@main
-      with:
-        branch: "automation/builder-toml-update"
-        force: true
-
   update:
     name: Update builder.toml
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: read   # so jam update-builder can list tags from ghcr.io/octopilot/*
+    outputs:
+      commit_sha: ${{ steps.commit.outputs.commit_sha }}
     needs: preparation
     strategy:
       max-parallel: 1
@@ -83,16 +70,25 @@ jobs:
     steps:
     - name: Check out
       uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
 
     - name: Checkout branch
       uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
       with:
         branch: "automation/builder-toml-update"
 
+    - name: Log in to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.OCTOPILOT_GITHUB_TOKEN }}
+
     - name: Update builder.toml
       uses: paketo-buildpacks/github-config/actions/builder/update@main
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.OCTOPILOT_GITHUB_TOKEN }}
         filename: "${{ matrix.builders.path }}/builder.toml"
 
     - name: Git commit

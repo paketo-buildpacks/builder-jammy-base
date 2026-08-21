@@ -95,21 +95,27 @@ jobs:
     - name: Compare previous releases
       id: compare_previous_release
       run: |
+        builders_changed=false
         builders=$(echo '${{ needs.preparation.outputs.builders }}' | jq -c '.[]')
-        for builder in $builders; do
-          builder_path=$(echo "$builder" | jq -r '.path')
 
-          changed=$(git diff --name-only $(git describe --tags --abbrev=0) -- $builder_path/builder.toml)
-          if [ -z "${changed}" ]
-          then
-            # We do not write on the github output because this step runs multiple times
-            # and it might overwrite any true value written by the else statement.
-            echo "No changes for $builder_path/builder.toml"
-          else
-            echo "Changes detected for $builder_path/builder.toml"
-            echo "builders_changed=true" >> $GITHUB_OUTPUT
-          fi
-        done
+        # If no tags exist (e.g. new fork), run full pipeline so smoke/release can run
+        if ! last_tag=$(git describe --tags --abbrev=0 2>/dev/null); then
+          echo "No tags found - running full pipeline (smoke + release)"
+          builders_changed=true
+        else
+          for builder in $builders; do
+            builder_path=$(echo "$builder" | jq -r '.path')
+            changed=$(git diff --name-only "$last_tag" -- "$builder_path/builder.toml" 2>/dev/null || true)
+            if [ -n "${changed}" ]; then
+              echo "Changes detected for $builder_path/builder.toml"
+              builders_changed=true
+            else
+              echo "No changes for $builder_path/builder.toml"
+            fi
+          done
+        fi
+
+        echo "builders_changed=${builders_changed}" >> $GITHUB_OUTPUT
 
   smoke:
     name: Smoke Test
