@@ -18,7 +18,7 @@ jobs:
       builders: ${{ steps.get-builders.outputs.builders }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
@@ -82,7 +82,7 @@ jobs:
 
     steps:
     - name: Check out
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Checkout branch
       uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
@@ -116,7 +116,7 @@ jobs:
     needs: update
     steps:
     - name: Check out
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Checkout branch
       uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main

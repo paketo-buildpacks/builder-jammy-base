@@ -19,7 +19,7 @@ jobs:
       combos: ${{ steps.get_combos.outputs.combos }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Get Builders
       id: get-builders
@@ -88,7 +88,7 @@ jobs:
       builders_changed: ${{ steps.compare_previous_release.outputs.builders_changed }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0  # gets full history
 
@@ -122,10 +122,10 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Setup Go
-      uses: actions/setup-go@v6
+      uses: actions/setup-go@v7
       with:
         go-version-file: go.mod
 
@@ -148,10 +148,10 @@ jobs:
       builder_info: ${{ steps.notes.outputs.body }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Setup Go
-      uses: actions/setup-go@v6
+      uses: actions/setup-go@v7
       with:
         go-version-file: go.mod
 
@@ -181,7 +181,7 @@ jobs:
           | grep -v 'Warning' > "${{ matrix.builders.name }}-info.md"
 
     - name: Upload info for ${{ matrix.builders.name }}
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: "${{ matrix.builders.name }}-info.md"
         path: "${{ matrix.builders.name }}-info.md"
@@ -192,12 +192,12 @@ jobs:
     needs: [preparation, get_builders_info]
     steps:
     - name: Checkout With History
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0  # gets full history
 
     - name: Download Release Note File(s)
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v8
       with:
         path: info
         pattern: "*info.md"
@@ -259,7 +259,7 @@ jobs:
 
     - name: Publish Release
       id: publish
-      uses: release-drafter/release-drafter@v6
+      uses: release-drafter/release-drafter@v7
       with:
         config-name: release-drafter-config.yml
         publish: true
