@@ -20,6 +20,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v7
       with:
+        token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
         fetch-depth: 0
 
     - name: Get Builders
@@ -83,6 +84,8 @@ jobs:
     steps:
     - name: Check out
       uses: actions/checkout@v7
+      with:
+        token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
 
     - name: Checkout branch
       uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
