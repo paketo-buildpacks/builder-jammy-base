@@ -1,12 +1,12 @@
 description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, .NET Core, Node.js, Python, Apache HTTPD, NGINX and Procfile"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/dotnet-core:4.9.1"
-  version = "4.9.1"
+  uri = "docker://docker.io/paketobuildpacks/dotnet-core:4.10.0"
+  version = "4.10.0"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/go:4.19.27"
-  version = "4.19.27"
+  uri = "docker://docker.io/paketobuildpacks/go:4.20.0"
+  version = "4.20.0"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/java-native-image:14.11.0"
@@ -17,24 +17,24 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   version = "22.4.0"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/nodejs:10.10.1"
-  version = "10.10.1"
+  uri = "docker://docker.io/paketobuildpacks/nodejs:10.11.0"
+  version = "10.11.0"
 
 [[buildpacks]]
   uri = "docker://docker.io/paketobuildpacks/procfile:5.14.0"
   version = "5.14.0"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/python:2.61.0"
-  version = "2.61.0"
+  uri = "docker://docker.io/paketobuildpacks/python:2.62.0"
+  version = "2.62.0"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/ruby:3.0.4"
-  version = "3.0.4"
+  uri = "docker://docker.io/paketobuildpacks/ruby:3.0.5"
+  version = "3.0.5"
 
 [[buildpacks]]
-  uri = "docker://docker.io/paketobuildpacks/web-servers:4.10.1"
-  version = "4.10.1"
+  uri = "docker://docker.io/paketobuildpacks/web-servers:4.11.0"
+  version = "4.11.0"
 
 [lifecycle]
   version = "0.21.19"
@@ -43,19 +43,19 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/ruby"
-    version = "3.0.4"
+    version = "3.0.5"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/dotnet-core"
-    version = "4.9.1"
+    version = "4.10.0"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/go"
-    version = "4.19.27"
+    version = "4.20.0"
 
 [[order]]
 
@@ -73,19 +73,19 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 
   [[order.group]]
     id = "paketo-buildpacks/web-servers"
-    version = "4.10.1"
+    version = "4.11.0"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/nodejs"
-    version = "10.10.1"
+    version = "10.11.0"
 
 [[order]]
 
   [[order.group]]
     id = "paketo-buildpacks/python"
-    version = "2.61.0"
+    version = "2.62.0"
 
 [[order]]
 
