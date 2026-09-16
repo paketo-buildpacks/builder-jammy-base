@@ -17,7 +17,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       with:
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
 
@@ -33,14 +33,14 @@ jobs:
 
     - name: Checkout paketo-buildpacks samples
       if: ${{ steps.builder_file_exists.outputs.exists == 'true' }}
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       with:
         repository: paketo-buildpacks/samples
         path: samples
 
     - name: Checkout Branch
       if: ${{ steps.builder_file_exists.outputs.exists == 'true' }}
-      uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@main
+      uses: paketo-buildpacks/github-config/actions/pull-request/checkout-branch@95db4417114813f5661189259ba2caa93f76c6b9 # main
       with:
         branch: automation/testdata/update
 
@@ -99,7 +99,7 @@ jobs:
     - name: Commit
       if: ${{ steps.builder_file_exists.outputs.exists == 'true' }}
       id: commit
-      uses: paketo-buildpacks/github-config/actions/pull-request/create-commit@main
+      uses: paketo-buildpacks/github-config/actions/pull-request/create-commit@95db4417114813f5661189259ba2caa93f76c6b9 # main
       with:
         message: "Updating test data from samples"
         pathspec: "."
@@ -108,13 +108,13 @@ jobs:
 
     - name: Push Branch
       if: ${{ steps.commit.outputs.commit_sha != '' }}
-      uses: paketo-buildpacks/github-config/actions/pull-request/push-branch@main
+      uses: paketo-buildpacks/github-config/actions/pull-request/push-branch@95db4417114813f5661189259ba2caa93f76c6b9 # main
       with:
         branch: automation/testdata/update
 
     - name: Open Pull Request
       if: ${{ steps.commit.outputs.commit_sha != '' }}
-      uses: paketo-buildpacks/github-config/actions/pull-request/open@main
+      uses: paketo-buildpacks/github-config/actions/pull-request/open@95db4417114813f5661189259ba2caa93f76c6b9 # main
       with:
         token: ${{ secrets.PAKETO_BOT_GITHUB_TOKEN }}
         title: "Updates test data from samples"
@@ -128,7 +128,7 @@ jobs:
     if: ${{ always() && needs.build.result == 'failure' }}
     steps:
     - name: File Failure Alert Issue
-      uses: paketo-buildpacks/github-config/actions/issue/file@main
+      uses: paketo-buildpacks/github-config/actions/issue/file@95db4417114813f5661189259ba2caa93f76c6b9 # main
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         repo: ${{ github.repository }}
