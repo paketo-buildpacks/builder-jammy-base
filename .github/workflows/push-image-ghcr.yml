@@ -31,6 +31,38 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Floor: octopilot/rust 0.1.13 is the first buildpack that both registers
+      # launch processes and leaves /workspace traversable. 0.1.0 renames the
+      # binary to bin/web and writes launch.toml in the wrong directory.
+      # octopilot-pipeline-tools/docs/image-launch-and-builder-tags.md
+      - name: Require a builder that can launch Rust binaries
+        run: |
+          python3 - << 'PY'
+          import pathlib, sys
+          text = pathlib.Path("builder.toml").read_text()
+          lines = text.splitlines()
+          rust = None
+          helm = False
+          for i, line in enumerate(lines):
+              if 'id = "octopilot/rust"' in line:
+                  for nxt in lines[i:i + 4]:
+                      if nxt.strip().startswith("version"):
+                          rust = nxt.split("=", 1)[1].strip().strip('"')
+                          break
+              if 'id = "octopilot/helm"' in line:
+                  helm = True
+          def parts(v):
+              return tuple(int(p) for p in v.split("."))
+          if rust is None or parts(rust) < (0, 1, 13):
+              sys.exit(
+                  f"refusing to publish: octopilot/rust {rust!r} is below 0.1.13 "
+                  "(launch processes and /workspace mode 0755)."
+              )
+          if not helm:
+              sys.exit("refusing to publish: octopilot/helm is not in the order")
+          print(f"builder ok: octopilot/rust {rust}, helm present")
+          PY
+
       - name: Set tag
         id: tag
         run: |
