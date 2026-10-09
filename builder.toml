@@ -47,6 +47,15 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
 [lifecycle]
   version = "0.21.22"
 
+# octopilot/rust first: Paketo's python group passes detection on any tree containing a .py file, so a Rust workspace
+# with Python tooling beside it (scripts, notebooks) was built as a Python app when Rust came after it. Rust detects only
+# on a Cargo.toml, so every other app falls through to the Paketo groups below unchanged.
+[[order]]
+
+  [[order.group]]
+    id = "octopilot/rust"
+    version = "0.1.16"
+
 [[order]]
 
   [[order.group]]
@@ -100,12 +109,6 @@ description = "Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java,
   [[order.group]]
     id = "paketo-buildpacks/procfile"
     version = "5.15.2"
-
-[[order]]
-
-  [[order.group]]
-    id = "octopilot/rust"
-    version = "0.1.16"
 
 [[order]]
 

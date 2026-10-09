@@ -75,6 +75,8 @@ func testRust(t *testing.T, context spec.G, it spec.S) {
 			Eventually(container).Should(BeAvailable())
 
 			Expect(logs).To(ContainLines(ContainSubstring("octopilot/rust")))
+			// testdata/rust carries a .py file: Python must not win detection over Rust.
+			Expect(logs.String()).NotTo(ContainSubstring("paketo-buildpacks/python-start"))
 		})
 	})
 
