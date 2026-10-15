@@ -305,6 +305,8 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [ smoke, release, get_builders_info, preparation ]
     if: ${{ always() && needs.smoke.result == 'failure' ||  needs.release.result == 'failure' || needs.get_builders_info.result == 'failure' || needs.preparation.result == 'failure' }}
+    permissions:
+      issues: write
     steps:
     - name: File Failure Alert Issue
       uses: paketo-buildpacks/github-config/actions/issue/file@main
