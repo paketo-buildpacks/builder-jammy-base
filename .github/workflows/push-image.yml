@@ -91,7 +91,23 @@ jobs:
         ./scripts/publish.sh --builder-toml-path "${{ matrix.builders.path }}/builder.toml" \
           --builder-image-ref "${IMAGE_REF}"
 
-        ./.bin/crane tag "${IMAGE_REF}" latest
+        EXPECTED_PLATFORMS=$(grep -c '^\[\[targets\]\]' "${{ matrix.builders.path }}/builder.toml" || true)
+        if [ "${EXPECTED_PLATFORMS}" -eq 0 ]; then
+          EXPECTED_PLATFORMS=1
+        fi
+
+        MAX_ATTEMPTS=12
+        for _ in $(seq 1 "${MAX_ATTEMPTS}"); do
+          ./.bin/crane manifest "${IMAGE_REF}" > manifest.json
+          PLATFORMS=$(jq 'if .manifests then (.manifests | length) else 1 end' manifest.json)
+          if [ "${PLATFORMS}" -eq "${EXPECTED_PLATFORMS}" ]; then
+            ./.bin/crane tag "${DOCKERHUB_ORG}/${CONTAINER_REPO}@sha256:$(sha256sum manifest.json | cut -d ' ' -f 1)" latest
+            exit 0
+          fi
+          sleep 5
+        done
+        echo "::error::${IMAGE_REF} has ${PLATFORMS} platforms, expected ${EXPECTED_PLATFORMS}"
+        exit 1
 
   failure:
     name: Alert on Failure
