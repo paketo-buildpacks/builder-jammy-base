@@ -37,7 +37,7 @@ uri = 'docker://docker.io/paketobuildpacks/web-servers:4.16.0'
 version = '4.16.0'
 
 [lifecycle]
-version = '0.21.28'
+version = '0.21.29'
 
 [[order]]
 [[order.group]]
