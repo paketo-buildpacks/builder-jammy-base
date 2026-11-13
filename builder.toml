@@ -1,40 +1,40 @@
 description = 'Ubuntu 22.04 Jammy Jellyfish base image with buildpacks for Java, Go, .NET Core, Node.js, Python, Apache HTTPD, NGINX and Procfile'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/dotnet-core:4.15.0'
-version = '4.15.0'
+uri = 'docker://docker.io/paketobuildpacks/dotnet-core:4.15.1'
+version = '4.15.1'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/go:4.23.3'
-version = '4.23.3'
+uri = 'docker://docker.io/paketobuildpacks/go:4.23.4'
+version = '4.23.4'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/java-native-image:14.14.4'
-version = '14.14.4'
+uri = 'docker://docker.io/paketobuildpacks/java-native-image:14.15.0'
+version = '14.15.0'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/java:22.8.0'
-version = '22.8.0'
+uri = 'docker://docker.io/paketobuildpacks/java:22.9.0'
+version = '22.9.0'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/nodejs:10.15.0'
-version = '10.15.0'
+uri = 'docker://docker.io/paketobuildpacks/nodejs:10.16.0'
+version = '10.16.0'
 
 [[buildpacks]]
 uri = 'docker://docker.io/paketobuildpacks/procfile:5.15.8'
 version = '5.15.8'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/python:2.68.0'
-version = '2.68.0'
+uri = 'docker://docker.io/paketobuildpacks/python:2.69.0'
+version = '2.69.0'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/ruby:3.4.0'
-version = '3.4.0'
+uri = 'docker://docker.io/paketobuildpacks/ruby:3.4.1'
+version = '3.4.1'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/web-servers:4.16.0'
-version = '4.16.0'
+uri = 'docker://docker.io/paketobuildpacks/web-servers:4.16.1'
+version = '4.16.1'
 
 [lifecycle]
 version = '0.21.29'
@@ -42,42 +42,42 @@ version = '0.21.29'
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/ruby'
-version = '3.4.0'
+version = '3.4.1'
 
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/dotnet-core'
-version = '4.15.0'
+version = '4.15.1'
 
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/go'
-version = '4.23.3'
+version = '4.23.4'
 
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/java-native-image'
-version = '14.14.4'
+version = '14.15.0'
 
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/java'
-version = '22.8.0'
+version = '22.9.0'
 
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/web-servers'
-version = '4.16.0'
+version = '4.16.1'
 
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/nodejs'
-version = '10.15.0'
+version = '10.16.0'
 
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/python'
-version = '2.68.0'
+version = '2.69.0'
 
 [[order]]
 [[order.group]]
@@ -86,5 +86,5 @@ version = '5.15.8'
 
 [stack]
 id = 'io.buildpacks.stacks.jammy'
-build-image = 'docker.io/paketobuildpacks/build-jammy-base:0.1.299'
+build-image = 'docker.io/paketobuildpacks/build-jammy-base:0.1.300'
 run-image = 'index.docker.io/paketobuildpacks/run-jammy-base:latest'
