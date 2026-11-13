@@ -86,5 +86,5 @@ version = '5.15.8'
 
 [stack]
 id = 'io.buildpacks.stacks.jammy'
-build-image = 'docker.io/paketobuildpacks/build-jammy-base:0.1.298'
+build-image = 'docker.io/paketobuildpacks/build-jammy-base:0.1.299'
 run-image = 'index.docker.io/paketobuildpacks/run-jammy-base:latest'
