@@ -21,8 +21,8 @@ uri = 'docker://docker.io/paketobuildpacks/nodejs:10.16.0'
 version = '10.16.0'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/procfile:5.15.8'
-version = '5.15.8'
+uri = 'docker://docker.io/paketobuildpacks/procfile:5.15.9'
+version = '5.15.9'
 
 [[buildpacks]]
 uri = 'docker://docker.io/paketobuildpacks/python:2.69.0'
@@ -82,9 +82,9 @@ version = '2.69.0'
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/procfile'
-version = '5.15.8'
+version = '5.15.9'
 
 [stack]
 id = 'io.buildpacks.stacks.jammy'
-build-image = 'docker.io/paketobuildpacks/build-jammy-base:0.1.301'
+build-image = 'docker.io/paketobuildpacks/build-jammy-base:0.1.302'
 run-image = 'index.docker.io/paketobuildpacks/run-jammy-base:latest'
