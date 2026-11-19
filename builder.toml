@@ -29,12 +29,12 @@ uri = 'docker://docker.io/paketobuildpacks/python:2.69.0'
 version = '2.69.0'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/ruby:3.4.1'
-version = '3.4.1'
+uri = 'docker://docker.io/paketobuildpacks/ruby:3.5.0'
+version = '3.5.0'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/web-servers:4.16.1'
-version = '4.16.1'
+uri = 'docker://docker.io/paketobuildpacks/web-servers:4.16.2'
+version = '4.16.2'
 
 [lifecycle]
 version = '0.21.29'
@@ -42,7 +42,7 @@ version = '0.21.29'
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/ruby'
-version = '3.4.1'
+version = '3.5.0'
 
 [[order]]
 [[order.group]]
@@ -67,7 +67,7 @@ version = '22.9.1'
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/web-servers'
-version = '4.16.1'
+version = '4.16.2'
 
 [[order]]
 [[order.group]]
