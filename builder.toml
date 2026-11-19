@@ -13,8 +13,8 @@ uri = 'docker://docker.io/paketobuildpacks/java-native-image:14.15.0'
 version = '14.15.0'
 
 [[buildpacks]]
-uri = 'docker://docker.io/paketobuildpacks/java:22.9.0'
-version = '22.9.0'
+uri = 'docker://docker.io/paketobuildpacks/java:22.9.1'
+version = '22.9.1'
 
 [[buildpacks]]
 uri = 'docker://docker.io/paketobuildpacks/nodejs:10.16.0'
@@ -62,7 +62,7 @@ version = '14.15.0'
 [[order]]
 [[order.group]]
 id = 'paketo-buildpacks/java'
-version = '22.9.0'
+version = '22.9.1'
 
 [[order]]
 [[order.group]]
